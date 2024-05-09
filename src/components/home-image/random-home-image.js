@@ -4,10 +4,13 @@ import p2 from './home-images/p2.jpg';
 import p3 from './home-images/p3.jpg'; 
 import p4 from './home-images/p4.jpg'; 
 import p5 from './home-images/p5.jpg'; 
-import p6 from './home-images/p6.jpg'; 
+import p6 from './home-images/p6.jpg';
+import p7 from './home-images/p7.jpg'; 
+import p8 from './home-images/p8.jpg'; 
+import p9 from './home-images/p9.jpg'; 
 
 const RandomHomeImageComponent = () => {
-  const imageUrls = [p1, p2, p3, p4, p5, p6
+  const imageUrls = [p1, p2, p3, p4, p5, p6, p7, p8, p9
   ];
 
   const [randomImageUrl, setRandomImageUrl] = useState('');
