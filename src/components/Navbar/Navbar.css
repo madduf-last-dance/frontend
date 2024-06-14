@@ -1,0 +1,35 @@
+/* src/components/Navbar.css */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-logo a {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+    text-decoration: none;
+  }
+  
+  .navbar-menu {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar-menu .ant-btn {
+    margin-left: 10px;
+  }
+  
+  .navbar-hamburger {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .navbar-hamburger {
+      display: block;
+    }
+  }

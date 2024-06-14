@@ -1,0 +1,27 @@
+.search-bar-container {
+  display: flex;
+  justify-content: center; /* Centers the search bar horizontally within its parent */
+  padding: 20px; /* Optional: Adds padding around the container */
+  margin-top: 30px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers the items within the search bar */
+    padding: 10px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .search-bar .ant-input,
+  .search-bar .ant-picker,
+  .search-bar .ant-select,
+  .search-bar .ant-btn {
+    margin-right: 10px;
+  }
+
+  .search-bar .ant-btn {
+    margin-right: 0; /* Removes the right margin from the last item */
+  }
