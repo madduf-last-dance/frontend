@@ -62,7 +62,7 @@ const Navbar = () => {
     const menu = isLoggedIn ? (
         <Menu>
           <Menu.Item key="1">
-            <Link to="/profiles/">Profile</Link>
+            <Link to={`/profiles/${ userProfile.username }`}>Profile</Link>
           </Menu.Item>
           <Menu.Item key="2" onClick={handleLogout}>
             Log out

@@ -1,0 +1,60 @@
+.host-profile-page {
+  max-width: 800px;
+  margin: auto;
+}
+
+.host-profile-header {
+  margin-bottom: 24px;
+}
+
+.host-reviews, .host-listings {
+  margin-bottom: 24px;
+}
+
+.ant-avatar {
+  display: block;
+  margin: auto;
+}
+
+.reviews-scroll-container {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 16px;
+}
+
+.reviews-cards {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.review-card {
+  flex: 0 0 auto;
+  width: 250px;
+  margin-right: 16px;
+  padding: 12px;
+}
+
+.ant-card-meta-avatar {
+  margin-right: 8px;
+}
+
+.ant-card-meta-title {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.ant-card-meta-description {
+  font-size: 12px;
+}
+
+.ant-rate {
+  font-size: 12px;
+}
+
+.ant-card {
+  margin-bottom: 8px;
+}
+
+.ant-card-meta-title {
+  font-weight: bold;
+}

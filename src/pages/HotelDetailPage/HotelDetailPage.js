@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Layout, Card, Carousel, List, Typography, Divider, Row, Col, DatePicker, InputNumber, Button } from 'antd';
+import { Layout, Card, Carousel, List, Typography, Divider, Row, Col, DatePicker, InputNumber, Button, Avatar, Rate } from 'antd';
+import { Comment } from '@ant-design/compatible';
+
 import moment from 'moment'; // Import moment library
 
 import { useParams } from 'react-router-dom';
@@ -38,6 +40,27 @@ const hotels = [
     },
     // Add more hotel data as needed
   ];
+
+  const reviews = [
+    {
+      author: 'John Doe',
+      avatar: 'https://via.placeholder.com/40',
+      content: 'Great place to stay! Very clean and comfortable.',
+      rating: 5,
+    },
+    {
+      author: 'Jane Smith',
+      avatar: 'https://via.placeholder.com/40',
+      content: 'Nice location but could be cleaner.',
+      rating: 3,
+    },
+  ];
+  
+  const host = {
+    name: 'Alice Johnson',
+    avatar: 'https://via.placeholder.com/64',
+    description: 'I am Alice, your host. I love meeting new people and ensuring they have a comfortable stay!',
+  };
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -139,6 +162,39 @@ const HotelDetailPage = () => {
               </Card>
             </Col>
           </Row>
+
+          {/* Reviews Section */}
+          <Row gutter={[16, 16]} style={{ marginTop: '20px' }}>
+            <Col span={18}>
+              <Card title="Reviews" bordered={true}>
+                {reviews.map((review, index) => (
+                  <Comment
+                    key={index}
+                    author={review.author}
+                    avatar={<Avatar src={review.avatar} />}
+                    content={review.content}
+                    datetime={
+                      <Rate disabled defaultValue={review.rating} />
+                    }
+                  />
+                ))}
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Meet Your Host Section */}
+          <Row gutter={[16, 16]} style={{ marginTop: '20px' }}>
+            <Col span={18}>
+              <Card title="Meet Your Host" bordered={true}>
+                <Comment
+                  author={host.name}
+                  avatar={<Avatar src={host.avatar} size={64} />}
+                  content={host.description}
+                />
+              </Card>
+            </Col>
+          </Row>
+
       </Content>
       </>
     );

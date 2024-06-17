@@ -41,7 +41,7 @@ const MyHotelsPage = () => {
   const handleEditHotel = async (values) => {
     try {
       const updatedHotel = values;
-      setHotels(hotels.map(hotel => (hotel.id === updatedHotel.id ? updatedHotel : hotel)));
+      setHotels(hotels.map(hotel => (hotel.name === updatedHotel.name ? updatedHotel : hotel)));
       setFormInitialValues(null); // Reset form initial values
       setModalVisible(false);
     } catch (error) {

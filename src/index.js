@@ -7,6 +7,7 @@ import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import HotelDetailPage from './pages/HotelDetailPage/HotelDetailPage';
 import MyHotelsPage from './pages/MyHotelsPage/MyHotelsPage';
+import HostProfilePage from './pages/HostProfilePage/HostProfilePage';
 
 const router = createBrowserRouter([
   {
@@ -15,16 +16,16 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />
   },
   {
-    path: '/profiles',
-    element: <h1>/profiles</h1>
+    path: '/hotels/:id',
+    element: <HotelDetailPage />
   },
   {
     path: '/profiles/:profileId',
     element: <ProfilePage />
   },
   {
-    path: '/hotels/:id',
-    element: <HotelDetailPage />
+    path: '/host-profiles/:hostId',
+    element: <HostProfilePage />
   },
   {
     path: '/my-hotels',
