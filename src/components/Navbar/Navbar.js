@@ -85,6 +85,7 @@ const Navbar = () => {
             <a to="/">Hotel reservation app</a>
         </div>
         <div className="navbar-menu">
+        <Link to="/my-hotels">My Hotels</Link>
         <Dropdown overlay={menu} trigger={['click']}>
             <Button icon={<UserOutlined />} />
         </Dropdown>
