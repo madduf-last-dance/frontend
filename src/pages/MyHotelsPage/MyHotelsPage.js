@@ -9,26 +9,29 @@ const { Title } = Typography;
 const MyHotelsPage = () => {
   const [hotels, setHotels] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentHotel, setCurrentHotel] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [formInitialValues, setFormInitialValues] = useState(null); // State to manage form initialValues
+
 
   useEffect(() => {
     // Fetch host's hotels from backend
     const fetchHotels = async () => {
-      try {
-        const data = [];
+        const data = [{
+            "name": "aaa",
+            "description": "asd"
+        }];
         setHotels(data);
-      } catch (error) {
-        console.error('Failed to fetch hotels:', error);
-      }
     };
+
     fetchHotels();
   }, []);
 
   const handleAddHotel = async (values) => {
     try {
+        console.log(values);
       const newHotel = values;
       setHotels([...hotels, newHotel]);
+      setFormInitialValues(null); // Reset form initial values
       setModalVisible(false);
     } catch (error) {
       console.error('Failed to add hotel:', error);
@@ -39,6 +42,7 @@ const MyHotelsPage = () => {
     try {
       const updatedHotel = values;
       setHotels(hotels.map(hotel => (hotel.id === updatedHotel.id ? updatedHotel : hotel)));
+      setFormInitialValues(null); // Reset form initial values
       setModalVisible(false);
     } catch (error) {
       console.error('Failed to update hotel:', error);
@@ -46,14 +50,15 @@ const MyHotelsPage = () => {
   };
 
   const openAddModal = () => {
-    setCurrentHotel(null);
     setIsEditMode(false);
+    setFormInitialValues(null); // Initialize form with empty values
     setModalVisible(true);
   };
 
   const openEditModal = (hotel) => {
-    setCurrentHotel(hotel);
+    console.log(hotel);
     setIsEditMode(true);
+    setFormInitialValues(hotel); // Initialize form with empty values
     setModalVisible(true);
   };
 
@@ -86,11 +91,15 @@ const MyHotelsPage = () => {
       <Modal
         title={isEditMode ? 'Edit Hotel' : 'Add New Hotel'}
         visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
+        onCancel={() => {
+            setModalVisible(false);
+            setIsEditMode(false);
+            setFormInitialValues(null); // Reset form initial values on cancel
+          }}
         footer={null}
       >
         <HotelForm
-          initialValues={currentHotel || {}}
+          initialValues={formInitialValues}
           onFinish={isEditMode ? handleEditHotel : handleAddHotel}
         />
       </Modal>

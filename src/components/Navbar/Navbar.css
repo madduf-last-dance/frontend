@@ -10,20 +10,46 @@
   
   .navbar-logo a {
     font-size: 24px;
-    font-weight: bold;
-    color: #000;
+    font-weight: 500; /* Adjusted the font weight to match better */
     text-decoration: none;
+    color: #000;
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; /* Apply font to menu item */
   }
   
+  .navbar-logo a:hover {
+    background-color: #f7f7f7;
+    color: #000;
+  }
+
   .navbar-menu {
     display: flex;
     align-items: center;
   }
+
+  .navbar-menu-item {
+    font-size: 14px;
+    font-weight: 500; /* Adjusted the font weight to match better */
+    margin-right: 2px;
+    color: #484848;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 12px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-family: 'DM Sans', sans-serif; /* Apply font to menu item */
+  }
   
+  .navbar-menu-item:hover {
+    background-color: #f7f7f7;
+    color: #000;
+  }
+  
+
   .navbar-menu .ant-btn {
     margin-left: 10px;
   }
-  
+
   .navbar-hamburger {
     display: none;
   }

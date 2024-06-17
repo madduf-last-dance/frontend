@@ -1,10 +1,31 @@
-import React from 'react';
-import { Form, Input, Button, List, Upload } from 'antd';
+import React, { useEffect } from 'react';
+import { Form, Input, Button, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 
 const HotelForm = ({ initialValues, onFinish }) => {
+
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (initialValues) {
+            form.setFieldsValue(initialValues);
+        } else {
+            form.resetFields(); // Reset form fields when initialValues is null or undefined
+        }
+    }, [form, initialValues]);
+
+    const normFile = (e) => {
+        if (Array.isArray(e)) {
+            return e;
+        }
+        if (e.fileList) {
+            return e.fileList;
+        }
+        return [];
+    };
   return (
     <Form
+        form={form}
       layout="vertical"
       initialValues={initialValues}
       onFinish={onFinish}
@@ -41,6 +62,8 @@ const HotelForm = ({ initialValues, onFinish }) => {
         label="Photos"
         name="photos"
         rules={[{ required: true, message: 'Please upload photos!' }]}
+        valuePropName="fileList"
+        getValueFromEvent={normFile}
       >
         <Upload listType="picture" multiple>
           <Button icon={<UploadOutlined />}>Upload</Button>

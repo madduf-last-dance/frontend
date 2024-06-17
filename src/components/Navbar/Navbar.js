@@ -82,13 +82,13 @@ const Navbar = () => {
     return (
     <div className="navbar">
         <div className="navbar-logo">
-            <a to="/">Hotel reservation app</a>
+            <Link to="/">Hotel reservation app</Link>
         </div>
         <div className="navbar-menu">
-        <Link to="/my-hotels">My Hotels</Link>
-        <Dropdown overlay={menu} trigger={['click']}>
-            <Button icon={<UserOutlined />} />
-        </Dropdown>
+            <Link to="/my-hotels" className="navbar-menu-item">My Hotels</Link>
+            <Dropdown overlay={menu} trigger={['click']}>
+                <Button icon={<UserOutlined />} />
+            </Dropdown>
         </div>
         <SignUpModal visible={signUpVisible} onClose={closeSignUpModal} />
         <LoginModal visible={loginVisible} onClose={closeLoginModal} />
