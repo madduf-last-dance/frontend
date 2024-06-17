@@ -1,9 +1,9 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Layout, Card, Carousel, List } from 'antd';
-import Navbar from '../../components/Navbar/Navbar';
+import React, { useState } from 'react';
+import { Layout, Card, Carousel, List, Typography, Divider, Row, Col, DatePicker, InputNumber, Button } from 'antd';
+import moment from 'moment'; // Import moment library
 
-const { Content } = Layout;
+import { useParams } from 'react-router-dom';
+import Navbar from '../../components/Navbar/Navbar';
 
 const hotels = [
     {
@@ -39,43 +39,106 @@ const hotels = [
     // Add more hotel data as needed
   ];
 
+const { Content } = Layout;
+const { Title } = Typography;
+const { RangePicker } = DatePicker;
+
 const HotelDetailPage = () => {
+
     const { id } = useParams();
     const hotel = hotels.find(hotel => hotel.id === parseInt(id));
+
+    const [selectedDates, setSelectedDates] = useState(null);
+    const [guests, setGuests] = useState(1);
+
+    const handleDateChange = (dates) => {
+      setSelectedDates(dates);
+    };
   
+    const handleGuestsChange = (value) => {
+      setGuests(value);
+    };
+  
+    const handleReservation = () => {
+      // Handle reservation logic here
+      console.log("Selected Dates:", selectedDates);
+      console.log("Number of Guests:", guests);
+      // Add your reservation logic, e.g., redirect to a reservation page, etc.
+    };
+
+
     if (!hotel) {
       return <div>Hotel not found</div>;
     }
-  
+
     return (
       <>
         <Navbar />
         <Content style={{ padding: '0 120px', marginTop: "42px"}}>
-        <Card
-          title={hotel.name}
-          bordered={false}
-          style={{ maxWidth: 600, width: '100%' }} // Set max-width and full width
-        >
-            <Carousel autoplay>
-            {hotel.photos.map((photo, index) => (
-                <div key={index}>
-                <img src={photo} alt={`Hotel ${index}`} style={{ width: '100%' }} />
-                </div>
-            ))}
-            </Carousel>
-            <p>{hotel.description}</p>
-            <p><strong>Location:</strong> {hotel.location}</p>
-            <p><strong>Amenities:</strong></p>
-            <List
-            dataSource={hotel.amenities}
-            renderItem={item => (
-                <List.Item>
-                {item}
-                </List.Item>
-            )}
-            />
-            <p><strong>Guests:</strong> {hotel.minGuests} - {hotel.maxGuests}</p>
-        </Card>
+          <Row gutter={[16, 16]}>
+            {/* Left Side - Hotel Details */}
+            <Col span={10}>
+              <Card
+                title={hotel.name}
+                bordered={true}
+                style={{ maxWidth: 600, width: '100%' }} // Set max-width and full width
+              >
+                <Carousel autoplay>
+                  {hotel.photos.map((photo, index) => (
+                    <div key={index}>
+                      <img src={photo} alt={`Hotel ${index}`} style={{ width: '100%' }} />
+                    </div>
+                  ))}
+                </Carousel>
+                <p>{hotel.description}</p>
+                <p><strong>Location:</strong> {hotel.location}</p>
+                <p><strong>Amenities:</strong></p>
+                <List
+                  dataSource={hotel.amenities}
+                  renderItem={item => (
+                    <List.Item>
+                      {item}
+                    </List.Item>
+                  )}
+                />
+                <p><strong>Guests:</strong> {hotel.minGuests} - {hotel.maxGuests}</p>
+              </Card>
+            </Col>
+
+            {/* Right Side - Reservation Form */}
+            <Col span={8}>
+              <Card title="Reservation" style={{ width: '100%' }}>
+                <Title level={4}>Select Dates</Title>
+                <RangePicker
+                  style={{ width: '100%' }}
+                  onChange={handleDateChange}
+                  disabledDate={(current) => current && current < moment().startOf('day')}
+                />
+
+                <Divider />
+
+                <Title level={4}>Number of Guests</Title>
+                <InputNumber
+                  min={1}
+                  max={hotel.maxGuests}
+                  defaultValue={1}
+                  onChange={handleGuestsChange}
+                  style={{ width: '100%' }}
+                />
+
+                <Divider />
+
+                <Title level={4}>Price per Night</Title>
+                <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Add pricing logic here</p>
+
+                <Divider />
+
+                <Button type="primary" block onClick={handleReservation}>
+                  Reserve Now
+                </Button>
+              </Card>
+            </Col>
+          </Row>
       </Content>
       </>
     );
