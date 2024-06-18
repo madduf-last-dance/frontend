@@ -1,12 +1,19 @@
 import React from 'react';
-import { Modal, Form, Input, Button } from 'antd';
+import { Modal, Form, Input, Button, message } from 'antd';
+import { login } from '../../services/userService';
 
 const LoginModal = ({ visible, onClose }) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    console.log('Success:', values);
-    // Handle login logic here
+    login(values).then(data => {      
+      const { accessToken } = data;
+      localStorage.setItem('accessToken', accessToken);
+
+      message.success('You have successfully logged in!');
+      console.log('data:', data);
+    })
+
     onClose();
   };
 

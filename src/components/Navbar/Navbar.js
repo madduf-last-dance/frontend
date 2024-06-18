@@ -15,29 +15,29 @@ const Navbar = () => {
 
     const [signUpVisible, setSignUpVisible] = useState(false);
     const [loginVisible, setLoginVisible] = useState(false);
+    const [signUpRole, setSignUpRole] = useState('guest'); // New state for sign-up role
 
     useEffect(() => {
         checkLoginStatus();
     }, []);
     
     const checkLoginStatus = async () => {
-    // Check if user is logged in by fetching profile
-    try {
-        const profileData = {
-            "username": "marko",
-            "password": "aaa"
-        }
-        setUserProfile(profileData);
-        setIsLoggedIn(true);
-    } catch (error) {
-        // Handle error or user not logged in
-        console.error('User not logged in:', error);
-        setIsLoggedIn(false);
-        setUserProfile(null);
-    }
+      try {
+          const profileData = {
+              "username": "marko",
+              "password": "aaa"
+          }
+          setUserProfile(profileData);
+          setIsLoggedIn(true);
+      } catch (error) {
+          console.error('User not logged in:', error);
+          setIsLoggedIn(false);
+          setUserProfile(null);
+      }
     };
 
-    const showSignUpModal = () => {
+    const showSignUpModal = (role) => {
+        setSignUpRole(role);
         setSignUpVisible(true);
     };
 
@@ -54,9 +54,9 @@ const Navbar = () => {
     };
 
     const handleLogout = () => {
-        // Implement logout logic if needed
-        setIsLoggedIn(false);
-        setUserProfile(null);
+      localStorage.removeItem('accessToken');
+      setIsLoggedIn(false);
+      setUserProfile(null);
     };
 
     const menu = isLoggedIn ? (
@@ -70,10 +70,13 @@ const Navbar = () => {
         </Menu>
       ) : (
         <Menu>
-          <Menu.Item key="1" onClick={showSignUpModal}>
-            Sign up
+          <Menu.Item key="1" onClick={() => showSignUpModal('guest')}>
+            Sign up as Guest
           </Menu.Item>
-          <Menu.Item key="2" onClick={showLoginModal}>
+          <Menu.Item key="2" onClick={() => showSignUpModal('host')}>
+            Sign up as Host
+          </Menu.Item>
+          <Menu.Item key="3" onClick={showLoginModal}>
             Log in
           </Menu.Item>
         </Menu>
@@ -90,7 +93,7 @@ const Navbar = () => {
                 <Button icon={<UserOutlined />} />
             </Dropdown>
         </div>
-        <SignUpModal visible={signUpVisible} onClose={closeSignUpModal} />
+        <SignUpModal visible={signUpVisible} onClose={closeSignUpModal} role={signUpRole}/>
         <LoginModal visible={loginVisible} onClose={closeLoginModal} />
     </div>
     );
