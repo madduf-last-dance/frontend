@@ -7,38 +7,22 @@ import moment from 'moment'; // Import moment library
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 
-const hotels = [
+  const hotels = [
     {
       id: 1,
-      name: 'Hotel California',
-      description: 'A lovely place, with great amenities and a wonderful view.',
-      location: 'Los Angeles, CA',
-      amenities: ['WiFi', 'Kitchen', 'Air Conditioning', 'Free Parking'],
-      photos: ['https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE2MjI1MjI0NDQ0MzYzMjM4Mg%3D%3D/original/ae3426d1-fba4-44d4-bed2-690426f25f7a.jpeg?im_w=1440&im_q=highq', 'https://via.placeholder.com/300', 'https://via.placeholder.com/300'],
-      minGuests: 1,
-      maxGuests: 4,
+      name: "Hotel Zimbabve",
+      description: "najjaci hotel koji postoji druze moj da l si lud da ovo omanes",
+      location: "Zmaj Jovina bb",
+      benefits: ["wifi", "Kitchen"],
+      availability: [
+        { startDate: "01-06-2023", endDate: "30-06-2023", price: 100 },
+        { startDate: "01-07-2023", endDate: "15-07-2023", price: 120 }
+      ],
+      photos: ["https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE2MjI1MjI0NDQ0MzYzMjM4Mg%3D%3D/original/ae3426d1-fba4-44d4-bed2-690426f25f7a.jpeg?im_w=1440&im_q=highq", "url2"],
+      minimumGuests: 1,
+      maximumGuests: 5,
+      isPerGuest: true,
     },
-    {
-      id: 2,
-      name: 'The Grand Budapest Hotel',
-      description: 'An exquisite hotel with old-world charm and modern facilities.',
-      location: 'Budapest, Hungary',
-      amenities: ['WiFi', 'Restaurant', 'Spa', 'Concierge'],
-      photos: ['https://via.placeholder.com/300', 'https://via.placeholder.com/300', 'https://via.placeholder.com/300'],
-      minGuests: 1,
-      maxGuests: 2,
-    },
-    {
-      id: 3,
-      name: 'Hotel Transylvania',
-      description: 'A spooky yet comfortable place to stay with family and friends.',
-      location: 'Transylvania, Romania',
-      amenities: ['WiFi', 'Swimming Pool', 'Gym', 'Free Parking'],
-      photos: ['https://via.placeholder.com/300', 'https://via.placeholder.com/300', 'https://via.placeholder.com/300'],
-      minGuests: 1,
-      maxGuests: 6,
-    },
-    // Add more hotel data as needed
   ];
 
   const reviews = [
@@ -115,16 +99,19 @@ const HotelDetailPage = () => {
                 </Carousel>
                 <p>{hotel.description}</p>
                 <p><strong>Location:</strong> {hotel.location}</p>
-                <p><strong>Amenities:</strong></p>
-                <List
-                  dataSource={hotel.amenities}
-                  renderItem={item => (
-                    <List.Item>
-                      {item}
-                    </List.Item>
-                  )}
-                />
-                <p><strong>Guests:</strong> {hotel.minGuests} - {hotel.maxGuests}</p>
+                <p><strong>benefits:</strong> {hotel.benefits} </p>
+
+                <p><strong>Guests:</strong> {hotel.minimumGuests} - {hotel.maximumGuests}</p>
+
+                <Divider />
+
+                <Title level={4}>Availability</Title>
+                  {hotel.availability.map((avail, index) => (
+                    <p key={index}>
+                      {moment(avail.startDate, "DD-MM-YYYY").format("MMM D, YYYY")} - {moment(avail.endDate, "DD-MM-YYYY").format("MMM D, YYYY")}
+                      <br></br>$<b>{avail.price}</b>
+                    </p>
+                  ))}
               </Card>
             </Col>
 

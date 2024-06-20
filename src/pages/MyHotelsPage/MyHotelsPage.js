@@ -18,7 +18,8 @@ const MyHotelsPage = () => {
     const fetchHotels = async () => {
       const data = [
         {
-          name: "aaa",
+          id: 1,
+          name: "Hotel Zimbave",
           description: "asd",
           location: "Location 1",
           benefits: ["wifi", "Kitchen"],
@@ -107,14 +108,14 @@ const MyHotelsPage = () => {
                   description={
                     <div className="hotel-card-content">
                       <p>{hotel.location}</p>
-                      <p>Benefits: {hotel.benefits}</p>
                       <div>
-                        {hotel.availability.map((a, idx) => (
-                          <p key={idx}>Availability: {a.startDate} - {a.endDate}, Price: ${a.price}</p>
+                        {hotel.availability.map((avail, idx) => (
+                         <p key={idx} style={{ marginBottom: '5px', fontSize: '12px' }}>
+                          {avail.startDate} - {avail.endDate} 
+                          <br></br>$<b>{avail.price}</b>
+                          </p>
                         ))}
                       </div>
-                      <p>Guests: {hotel.minimumGuests} - {hotel.maximumGuests}</p>
-                      <p>{hotel.isPerGuest ? "Price per guest" : "Fixed price"}</p>
                     </div>
                   }
                 />
