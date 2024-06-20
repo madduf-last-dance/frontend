@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Row, Col, Button, Modal, Typography } from 'antd';
+import { Layout, Card, Row, Col, Button, Modal, Typography, Carousel } from 'antd';
 import Navbar from '../../components/Navbar/Navbar';
 import HotelForm from '../../components/HotelForm/HotelForm';
+import './MyHotelsPage.css'; // Import the CSS file
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -12,15 +13,26 @@ const MyHotelsPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [formInitialValues, setFormInitialValues] = useState(null); // State to manage form initialValues
 
-
   useEffect(() => {
     // Fetch host's hotels from backend
     const fetchHotels = async () => {
-        const data = [{
-            "name": "aaa",
-            "description": "asd"
-        }];
-        setHotels(data);
+      const data = [
+        {
+          name: "aaa",
+          description: "asd",
+          location: "Location 1",
+          benefits: ["wifi", "Kitchen"],
+          availability: [
+            { startDate: "01-06-2023", endDate: "30-06-2023", price: 100 },
+            { startDate: "01-07-2023", endDate: "15-07-2023", price: 120 }
+          ],
+          photos: ["https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE2MjI1MjI0NDQ0MzYzMjM4Mg%3D%3D/original/ae3426d1-fba4-44d4-bed2-690426f25f7a.jpeg?im_w=1440&im_q=highq", "url2"],
+          minimumGuests: 1,
+          maximumGuests: 2,
+          isPerGuest: true,
+        },
+      ];
+      setHotels(data);
     };
 
     fetchHotels();
@@ -28,7 +40,6 @@ const MyHotelsPage = () => {
 
   const handleAddHotel = async (values) => {
     try {
-        console.log(values);
       const newHotel = values;
       setHotels([...hotels, newHotel]);
       setFormInitialValues(null); // Reset form initial values
@@ -74,15 +85,39 @@ const MyHotelsPage = () => {
           {hotels.map((hotel, index) => (
             <Col span={6} key={index}>
               <Card
+                className="hotel-card"
                 hoverable
-                cover={<img alt={hotel.name} src={hotel.img} />}
+                cover={
+                  <Carousel autoplay>
+                    {hotel.photos.map((photo, index) => (
+                      <div key={index}>
+                        <img src={photo} alt={`Hotel ${index}`} style={{ width: '100%' }} />
+                      </div>
+                    ))}
+                  </Carousel>
+                }
                 actions={[
                   <Button type="link" onClick={() => openEditModal(hotel)}>
                     Edit
                   </Button>,
                 ]}
               >
-                <Card.Meta title={hotel.name} description={hotel.description} />
+                <Card.Meta
+                  title={hotel.name}
+                  description={
+                    <div className="hotel-card-content">
+                      <p>{hotel.location}</p>
+                      <p>Benefits: {hotel.benefits}</p>
+                      <div>
+                        {hotel.availability.map((a, idx) => (
+                          <p key={idx}>Availability: {a.startDate} - {a.endDate}, Price: ${a.price}</p>
+                        ))}
+                      </div>
+                      <p>Guests: {hotel.minimumGuests} - {hotel.maximumGuests}</p>
+                      <p>{hotel.isPerGuest ? "Price per guest" : "Fixed price"}</p>
+                    </div>
+                  }
+                />
               </Card>
             </Col>
           ))}
@@ -92,10 +127,10 @@ const MyHotelsPage = () => {
         title={isEditMode ? 'Edit Hotel' : 'Add New Hotel'}
         visible={modalVisible}
         onCancel={() => {
-            setModalVisible(false);
-            setIsEditMode(false);
-            setFormInitialValues(null); // Reset form initial values on cancel
-          }}
+          setModalVisible(false);
+          setIsEditMode(false);
+          setFormInitialValues(null);
+        }}
         footer={null}
       >
         <HotelForm
