@@ -8,12 +8,17 @@ import ProfilePage from './pages/ProfilePage/ProfilePage';
 import HotelDetailPage from './pages/HotelDetailPage/HotelDetailPage';
 import MyHotelsPage from './pages/MyHotelsPage/MyHotelsPage';
 import HostProfilePage from './pages/HostProfilePage/HostProfilePage';
+import MyReservationsPage from './pages/MyReservationsPage/MyReservationsPage';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <HomePage />,
     errorElement: <NotFoundPage />
+  },
+  {
+    path: '/my-hotels',
+    element: <MyHotelsPage />
   },
   {
     path: '/hotels/:id',
@@ -28,8 +33,8 @@ const router = createBrowserRouter([
     element: <HostProfilePage />
   },
   {
-    path: '/my-hotels',
-    element: <MyHotelsPage />
+    path: '/reservations/:username',
+    element: <MyReservationsPage />
   }
 ]);
 

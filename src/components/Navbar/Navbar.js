@@ -59,12 +59,21 @@ const Navbar = () => {
       setUserProfile(null);
     };
 
+    const handleReservations = () => {
+      const reservations = [
+
+      ]
+    }
+
     const menu = isLoggedIn ? (
         <Menu>
           <Menu.Item key="1">
             <Link to={`/profiles/${ userProfile.username }`}>Profile</Link>
           </Menu.Item>
-          <Menu.Item key="2" onClick={handleLogout}>
+          <Menu.Item key="2" onClick={handleReservations}>
+            <Link to={`/reservations/${ userProfile.username }`}>Reservations</Link>
+          </Menu.Item>
+          <Menu.Item key="3" onClick={handleLogout}>
             Log out
           </Menu.Item>
         </Menu>

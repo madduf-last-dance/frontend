@@ -109,7 +109,7 @@ const HotelDetailPage = () => {
                   {hotel.availability.map((avail, index) => (
                     <p key={index}>
                       {moment(avail.startDate, "DD-MM-YYYY").format("MMM D, YYYY")} - {moment(avail.endDate, "DD-MM-YYYY").format("MMM D, YYYY")}
-                      <br></br>$<b>{avail.price}</b>
+                      <br></br>Price: $<b>{avail.price}</b>
                     </p>
                   ))}
               </Card>
