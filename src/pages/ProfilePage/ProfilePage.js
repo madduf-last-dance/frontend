@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Layout, message, Modal } from 'antd';
 import Navbar from '../../components/Navbar/Navbar';
 import './ProfilePage.css';
+import { profile, updateProfile } from '../../services/userService';
 
 const { Content } = Layout;
 
@@ -11,6 +12,7 @@ const ProfilePage = () => {
   const [profileForm] = Form.useForm();
   const [usernameForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
+  const [credentialsForm] = Form.useForm();
 
   const [usernameModalVisible, setUsernameModalVisible] = useState(false);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
@@ -26,22 +28,17 @@ const ProfilePage = () => {
 
   const fetchUserProfileData = async () => {
     try {
-      // Simulated user profile data
-      const userProfileData = {
-        firstName: "Marko",
-        lastName: "Markovic",
-        username: 'JohnDoe',
-        email: 'johndoe@example.com',
-      };
-
-      setUserProfile(userProfileData);
+      profile().then(data => {
+        setUserProfile(data);
+      })
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
     }
   };
 
   const handleProfileUpdate = (values) => {
-    setUserProfile(values);
+    updateProfile(values).then(
+      data => {setUserProfile(data); });
     message.success('Profile updated successfully!');
     // Call the backend API to update profile information here
   };
@@ -59,6 +56,10 @@ const ProfilePage = () => {
     message.success('Password updated successfully!');
     // Call the backend API to update the password here
   };
+
+  const handleCredentialsUpdate = (values) => {
+
+  }
 
   const showUsernameModal = () => {
     setUsernameModalVisible(true);
@@ -99,14 +100,14 @@ const ProfilePage = () => {
             </Form.Item>
             <Form.Item
               label="First Name"
-              name="firstName"
+              name="name"
               rules={[{ required: true, message: 'Please input your first name!' }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
               label="Last Name"
-              name="lastName"
+              name="surname"
               rules={[{ required: true, message: 'Please input your last name!' }]}
             >
               <Input />
@@ -176,7 +177,15 @@ const ProfilePage = () => {
               form={passwordForm}
               layout="vertical"
               onFinish={handlePasswordUpdate}
+              initialValues={{ username: userProfile.username }}
             >
+              <Form.Item
+                label="Username"
+                name="username"
+                rules={[{ required: true, message: 'Please input your username!' }]}
+              >
+                <Input />
+              </Form.Item>
               <Form.Item
                 label="Current Password"
                 name="currentPassword"

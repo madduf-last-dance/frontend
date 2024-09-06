@@ -33,7 +33,7 @@ const router = createBrowserRouter([
     element: <HostProfilePage />
   },
   {
-    path: '/reservations/:username',
+    path: '/reservations/:id',
     element: <MyReservationsPage />
   }
 ]);

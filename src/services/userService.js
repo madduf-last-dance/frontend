@@ -26,3 +26,22 @@ export const registerHost = async (registerHostData) => {
         throw error;
     }
 };
+
+export const profile = async () => {
+    try {
+        const response = await apiClient.get(`/user/profile`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+export const updateProfile = async (profileData) => {
+    try {
+        const response = await apiClient.post(`/user/update`,profileData);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

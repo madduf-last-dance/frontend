@@ -7,6 +7,7 @@ const SignUpModal = ({ visible, onClose, role }) => {
   const [form] = Form.useForm();
 
   const handleSignUp = (values) => {
+    console.log(values);
     if (role === "guest") {
       registerGuest(values).then(data => {
         message.success('You have successfully registered as guest!');

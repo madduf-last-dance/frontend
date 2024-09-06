@@ -7,7 +7,7 @@ const LoginModal = ({ visible, onClose }) => {
 
   const onFinish = (values) => {
     login(values).then(data => {      
-      const { accessToken } = data;
+      const accessToken = data['access_token'];
       localStorage.setItem('accessToken', accessToken);
 
       message.success('You have successfully logged in!');

@@ -6,24 +6,11 @@ import moment from 'moment'; // Import moment library
 
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
-
-  const hotels = [
-    {
-      id: 1,
-      name: "Hotel Zimbabve",
-      description: "najjaci hotel koji postoji druze moj da l si lud da ovo omanes",
-      location: "Zmaj Jovina bb",
-      benefits: ["wifi", "Kitchen"],
-      availability: [
-        { startDate: "01-06-2023", endDate: "30-06-2023", price: 100 },
-        { startDate: "01-07-2023", endDate: "15-07-2023", price: 120 }
-      ],
-      photos: ["https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE2MjI1MjI0NDQ0MzYzMjM4Mg%3D%3D/original/ae3426d1-fba4-44d4-bed2-690426f25f7a.jpeg?im_w=1440&im_q=highq", "url2"],
-      minimumGuests: 1,
-      maximumGuests: 5,
-      isPerGuest: true,
-    },
-  ];
+import { findById } from '../../services/accommodationService';
+import { useEffect } from 'react';
+import dayjs from 'dayjs';
+import { getRoles } from '@testing-library/react';
+import { createReservation } from '../../services/reservationService';
 
   const reviews = [
     {
@@ -53,9 +40,13 @@ const { RangePicker } = DatePicker;
 const HotelDetailPage = () => {
 
     const { id } = useParams();
-    const hotel = hotels.find(hotel => hotel.id === parseInt(id));
 
-    const [selectedDates, setSelectedDates] = useState(null);
+    const [hotel, setHotel] = useState(null);
+  useEffect(() => {
+    findById(id).then(data => {setHotel(data);})
+  },[id]);
+
+    const [selectedDates, setSelectedDates] = useState([]);
     const [guests, setGuests] = useState(1);
 
     const handleDateChange = (dates) => {
@@ -71,8 +62,18 @@ const HotelDetailPage = () => {
       console.log("Selected Dates:", selectedDates);
       console.log("Number of Guests:", guests);
       // Add your reservation logic, e.g., redirect to a reservation page, etc.
+      const reservationData = {
+          startDate: dayjs(selectedDates[0], 'YYYY-MM-DD'),
+          endDate: dayjs(selectedDates[1], 'YYYY-MM-DD'),
+          numberOfGuests: guests,
+          accommodationId: hotel.id,
+          guestId: 1,
+      };
+    createReservation(reservationData).then(data => {
+      console.log(data);
+    }
+    )
     };
-
 
     if (!hotel) {
       return <div>Hotel not found</div>;
@@ -108,8 +109,8 @@ const HotelDetailPage = () => {
                 <Title level={4}>Availability</Title>
                   {hotel.availability.map((avail, index) => (
                     <p key={index}>
-                      {moment(avail.startDate, "DD-MM-YYYY").format("MMM D, YYYY")} - {moment(avail.endDate, "DD-MM-YYYY").format("MMM D, YYYY")}
-                      <br></br>Price: $<b>{avail.price}</b>
+                      {moment(avail.startDate, "YYYY-MM-DD").format("MMM D, YYYY")} - {moment(avail.endDate, "YYYY-MM-DD").format("MMM D, YYYY")}
+                      <br></br>Price per {hotel.isPriceGuest ? "Guest" : "Day"} : $<b>{avail.price}</b>
                     </p>
                   ))}
               </Card>
@@ -135,11 +136,6 @@ const HotelDetailPage = () => {
                   onChange={handleGuestsChange}
                   style={{ width: '100%' }}
                 />
-
-                <Divider />
-
-                <Title level={4}>Price per Night</Title>
-                <p style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Add pricing logic here</p>
 
                 <Divider />
 

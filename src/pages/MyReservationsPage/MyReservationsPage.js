@@ -2,6 +2,9 @@ import React from 'react';
 import { Layout, Card, List, Button, Modal, Row, Col, Tag,Typography } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import Navbar from '../../components/Navbar/Navbar';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { cancelAccepted, cancelPending, userReservations } from '../../services/reservationService';
 
 const { Content } = Layout;
 const { confirm } = Modal;
@@ -28,13 +31,35 @@ const reservations = [
 
 const MyReservationsPage = () => {
 
+
+  const { id } = useParams();
+  const [reservations,setReservations] = useState([]);
+
+  useEffect(() => {
+   userReservations(id).then(data => {
+      setReservations(data);
+    })
+  }, [id])
   // Function to handle reservation cancellation
-  const handleCancelReservation = (reservationId) => {
+  const handleCancelReservation = (reservationId, status) => {
     confirm({
       title: 'Are you sure you want to cancel this reservation?',
       icon: <ExclamationCircleOutlined />,
       onOk() {
-        // Logic to cancel reservation
+        if(status === 'Pending') {
+          cancelPending(reservationId).then(data => {
+            userReservations(id).then(data => {
+              setReservations(data);
+            })
+          })
+        } else if(status === 'Accepted') {
+          cancelAccepted(reservationId).then(data => {
+            userReservations(id).then(data => {
+              setReservations(data);
+            })
+          })
+        }
+
         const updatedReservations = reservations.filter(reservation => reservation.id !== reservationId);
         // Update state or perform any necessary actions
         console.log('Reservation cancelled:', reservationId);
@@ -60,7 +85,7 @@ const MyReservationsPage = () => {
               >
                 <p><strong>Date:</strong><br></br> 
                 {reservation.startDate} - {reservation.endDate}</p>
-                <Button type="link" danger onClick={() => handleCancelReservation(reservation.id)}>Cancel</Button>
+                <Button type="link" danger onClick={() => handleCancelReservation(reservation.id,reservation.status)}>Cancel</Button>
               </Card>
             </Col>
           ))}

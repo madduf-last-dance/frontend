@@ -12,8 +12,8 @@ const HotelForm = ({ initialValues, onFinish }) => {
         ...initialValues,
         availability: initialValues.availability.map(a => ({
           ...a,
-          startDate: dayjs(a.startDate, 'DD-MM-YYYY'),
-          endDate: dayjs(a.endDate, 'DD-MM-YYYY'),
+          startDate: dayjs(a.startDate, 'YYYY-MM-DD'),
+          endDate: dayjs(a.endDate, 'YYYY-MM-DD'),
         })),
         photos: initialValues.photos.map((url, index) => ({
           uid: index,
@@ -42,17 +42,23 @@ const HotelForm = ({ initialValues, onFinish }) => {
       ...values,
       availability: values.availability.map(a => ({
         ...a,
-        startDate: a.startDate.format('DD-MM-YYYY'),
-        endDate: a.endDate.format('DD-MM-YYYY')
+        startDate: a.startDate.format('YYYY-MM-DD'),
+        endDate: a.endDate.format('YYYY-MM-DD')
       })),
       photos: values.photos.map(file => file.url || URL.createObjectURL(file.originFileObj))
     };
-    console.log(formattedValues);
     onFinish(formattedValues);
   };
-
   return (
     <Form form={form} layout="vertical" onFinish={onFinishHandler}>
+      <Form.Item
+        label="ID"
+        name="id"
+        value={form.id}
+      style={{ display: 'none' }}
+      >
+        <Input disabled/>
+      </Form.Item>
       <Form.Item
         label="Name"
         name="name"
@@ -63,7 +69,7 @@ const HotelForm = ({ initialValues, onFinish }) => {
       <Form.Item
         label="Description"
         name="description"
-        rules={[{ required: true, message: 'Please input the description!' }]}
+        rules={[{ required: false, message: 'Please input the description!' }]}
       >
         <Input.TextArea />
       </Form.Item>
@@ -84,7 +90,7 @@ const HotelForm = ({ initialValues, onFinish }) => {
       <Form.Item
         label="Photos"
         name="photos"
-        rules={[{ required: true, message: 'Please upload photos!' }]}
+        rules={[{ required: false, message: 'Please upload photos!' }]}
         valuePropName="fileList"
         getValueFromEvent={normFile}
       >
@@ -113,6 +119,14 @@ const HotelForm = ({ initialValues, onFinish }) => {
       <Form.Item
         label="Price per Guest"
         name="isPerGuest"
+        valuePropName="checked"
+        style={{ display: 'flex', justifyContent: 'flex-start' }}
+      >
+        <Checkbox />
+      </Form.Item>
+      <Form.Item
+        label="Accept automatically"
+        name="isAutomatic"
         valuePropName="checked"
         style={{ display: 'flex', justifyContent: 'flex-start' }}
       >

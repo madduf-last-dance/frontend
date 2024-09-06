@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { Input, DatePicker, Button, Select } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
-import moment from 'moment';
+import moment, { updateLocale } from 'moment';
 import './SearchBar.css'; // Create a CSS file for custom styles if needed
+import { search } from '../../services/accommodationService';
+import dayjs from 'dayjs';
+import axios from 'axios';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-export default function SearchBar() {
+
+export default function SearchBar({ updateHotels }) {
   const [location, setLocation] = useState('');
   const [dates, setDates] = useState([]);
   const [guests, setGuests] = useState(1);
@@ -26,8 +30,27 @@ export default function SearchBar() {
   };
 
   const handleSearch = () => {
-    // Handle search logic here, possibly triggering a search request or updating state
-    console.log({ location, dates, guests });
+    const apiClient = axios.create({
+      baseURL: 'http://localhost:3000',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      timeout: 5000,
+  });
+  
+      apiClient.get(`/accommodation/search`, {
+        params: {
+        location: location,
+        numberOfGuests: guests,
+        startDate:dayjs(dates[0],'DD-MM-YYYY'),
+        endDate: dayjs(dates[1],'DD-MM-YYYY'),
+      }})
+      .then(response => {
+        updateHotels(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   return (

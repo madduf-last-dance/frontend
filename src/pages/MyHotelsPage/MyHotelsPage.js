@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Row, Col, Button, Modal, Typography, Carousel } from 'antd';
+import { Layout, Card, Row, Col, Button, Modal, Typography, Carousel,message } from 'antd';
 import Navbar from '../../components/Navbar/Navbar';
 import HotelForm from '../../components/HotelForm/HotelForm';
 import './MyHotelsPage.css'; // Import the CSS file
+import { allHotelsHost, create, update } from '../../services/accommodationService';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -15,36 +16,25 @@ const MyHotelsPage = () => {
 
   useEffect(() => {
     // Fetch host's hotels from backend
-    const fetchHotels = async () => {
-      const data = [
-        {
-          id: 1,
-          name: "Hotel Zimbave",
-          description: "asd",
-          location: "Location 1",
-          benefits: ["wifi", "Kitchen"],
-          availability: [
-            { startDate: "01-06-2023", endDate: "30-06-2023", price: 100 },
-            { startDate: "01-07-2023", endDate: "15-07-2023", price: 120 }
-          ],
-          photos: ["https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTE2MjI1MjI0NDQ0MzYzMjM4Mg%3D%3D/original/ae3426d1-fba4-44d4-bed2-690426f25f7a.jpeg?im_w=1440&im_q=highq", "url2"],
-          minimumGuests: 1,
-          maximumGuests: 2,
-          isPerGuest: true,
-        },
-      ];
-      setHotels(data);
-    };
-
-    fetchHotels();
+    allHotelsHost().then(
+        data => { 
+        console.log(data);
+        setHotels(data); });
   }, []);
 
   const handleAddHotel = async (values) => {
     try {
-      const newHotel = values;
-      setHotels([...hotels, newHotel]);
-      setFormInitialValues(null); // Reset form initial values
-      setModalVisible(false);
+      values.benefitIds = [];
+      values.hostId = 1;
+      create(values).then(
+        data => {
+          setFormInitialValues(null); // Reset form initial values
+          setModalVisible(false);
+          message.success('Added new accommodation');
+          allHotelsHost().then(
+            data => { setHotels(data); });
+          }
+      )
     } catch (error) {
       console.error('Failed to add hotel:', error);
     }
@@ -52,10 +42,17 @@ const MyHotelsPage = () => {
 
   const handleEditHotel = async (values) => {
     try {
-      const updatedHotel = values;
-      setHotels(hotels.map(hotel => (hotel.name === updatedHotel.name ? updatedHotel : hotel)));
-      setFormInitialValues(null); // Reset form initial values
-      setModalVisible(false);
+      values.benefitIds = [];
+      values.hostId = 1;
+      update(values).then(
+        data => {
+          setFormInitialValues(null); // Reset form initial values
+          setModalVisible(false);
+          message.success('Added new accommodation');
+          allHotelsHost().then(
+            data => { setHotels(data); });
+          }
+      )
     } catch (error) {
       console.error('Failed to update hotel:', error);
     }
@@ -105,8 +102,10 @@ const MyHotelsPage = () => {
               >
                 <Card.Meta
                   title={hotel.name}
+                  id={hotel.id}
                   description={
                     <div className="hotel-card-content">
+                      <p>{hotel.id}</p>
                       <p>{hotel.location}</p>
                       <div>
                         {hotel.availability.map((avail, idx) => (
