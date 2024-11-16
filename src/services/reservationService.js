@@ -18,6 +18,15 @@ export const userReservations = async (id) => {
     }
 };
 
+export const accommodationReservations = async (id) => {
+    try {
+        const response = await apiClient.get(`/reservation/findByAccommodation/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const cancelPending = async (id) => {
     try {
         const response = await apiClient.delete(`/reservation/cancelReservationPending/${id}`);

@@ -7,10 +7,13 @@ import moment from 'moment'; // Import moment library
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import { findById } from '../../services/accommodationService';
+import { accommodationReservations } from '../../services/reservationService';
 import { useEffect } from 'react';
 import dayjs from 'dayjs';
 import { getRoles } from '@testing-library/react';
 import { createReservation } from '../../services/reservationService';
+
+import FrontCalendar from '../../components/Calendar/FrontCalendar';
 
   const reviews = [
     {
@@ -42,9 +45,30 @@ const HotelDetailPage = () => {
     const { id } = useParams();
 
     const [hotel, setHotel] = useState(null);
-  useEffect(() => {
-    findById(id).then(data => {setHotel(data);})
-  },[id]);
+    const [reservations, setReservations] = useState(null);
+
+    useEffect(() => {
+      findById(id).then(data => {
+        console.log("Fetched Data:", data); 
+        setHotel(data);
+      });
+      accommodationReservations(id).then(data => {
+        console.log("Fetched Reservations:", data); 
+        setReservations(data);
+      });
+    }, [id]);
+
+    // -- Calendar --
+
+    // Show green when there are avaliable dates
+    const availabilityEvents = hotel?.availability.map(avail => ({
+      title: 'Available',
+      start: avail.startDate,
+      end: avail.endDate,
+      display: 'background',
+      backgroundColor: 'green',
+      borderColor: 'green',
+    })) || [];
 
     const [selectedDates, setSelectedDates] = useState([]);
     const [guests, setGuests] = useState(1);
@@ -78,7 +102,7 @@ const HotelDetailPage = () => {
     if (!hotel) {
       return <div>Hotel not found</div>;
     }
-
+    
     return (
       <>
         <Navbar />
@@ -119,12 +143,13 @@ const HotelDetailPage = () => {
             {/* Right Side - Reservation Form */}
             <Col span={8}>
               <Card title="Reservation" style={{ width: '100%' }}>
-                <Title level={4}>Select Dates</Title>
-                <RangePicker
-                  style={{ width: '100%' }}
-                  onChange={handleDateChange}
-                  disabledDate={(current) => current && current < moment().startOf('day')}
+              <div className="App">
+                <h1>Select Dates:</h1>
+                <FrontCalendar
+                  availability={hotel.availability}
+                  reservations={reservations}
                 />
+                </div>
 
                 <Divider />
 
