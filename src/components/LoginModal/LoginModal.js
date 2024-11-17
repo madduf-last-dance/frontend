@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Form, Input, Button, message } from 'antd';
-import { login } from '../../services/userService';
+import { login, profile } from '../../services/userService';
+import { jwtDecode } from 'jwt-decode';
 
 const LoginModal = ({ visible, onClose }) => {
   const [form] = Form.useForm();
@@ -9,9 +10,18 @@ const LoginModal = ({ visible, onClose }) => {
     login(values).then(data => {      
       const accessToken = data['access_token'];
       localStorage.setItem('accessToken', accessToken);
+      const profileData = jwtDecode(accessToken);
+      console.log(typeof(profileData['role']),profileData['role']);
+      if(profileData['role'] === 0) {
+          localStorage.setItem('role','HOST');
+      } else if(profileData['role'] === 1) {
+          localStorage.setItem('role','GUEST');
+      } else{
+          localStorage.setItem('role','MISSING_ROLE');
+      }
 
       message.success('You have successfully logged in!');
-      console.log('data:', data);
+      window.location.reload();
     })
 
     onClose();
