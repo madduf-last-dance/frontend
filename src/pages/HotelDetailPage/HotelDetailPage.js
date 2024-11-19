@@ -82,21 +82,29 @@ const HotelDetailPage = () => {
     };
   
     const handleReservation = () => {
-      // Handle reservation logic here
+      
+      if (!selectedDates || selectedDates.length < 2) {
+        console.error("Please select a valid date range.");
+        return;
+      }
       console.log("Selected Dates:", selectedDates);
       console.log("Number of Guests:", guests);
       // Add your reservation logic, e.g., redirect to a reservation page, etc.
       const reservationData = {
-          startDate: dayjs(selectedDates[0], 'YYYY-MM-DD'),
-          endDate: dayjs(selectedDates[1], 'YYYY-MM-DD'),
-          numberOfGuests: guests,
+          startDate: selectedDates[0],
+          endDate: selectedDates[1],
+          guestNumber: guests,
           accommodationId: hotel.id,
           guestId: 1,
       };
-    createReservation(reservationData).then(data => {
-      console.log(data);
-    }
-    )
+      createReservation(reservationData)
+      .then((data) => {
+        console.log("Reservation created successfully:", data);
+      })
+      .catch((error) => {
+        console.error("Error creating reservation. Reservation data:", reservationData);
+        console.error("Error details:", error);
+      });
     };
 
     if (!hotel) {
@@ -148,6 +156,7 @@ const HotelDetailPage = () => {
                 <FrontCalendar
                   availability={hotel.availability}
                   reservations={reservations}
+                  onDatesSelected={(dates) => setSelectedDates([dates.start, dates.end])}
                 />
                 </div>
 
