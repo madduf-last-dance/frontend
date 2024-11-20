@@ -3,6 +3,8 @@ import { Layout, Card, Row, Col, Button, Modal, Typography, Carousel,message } f
 import Navbar from '../../components/Navbar/Navbar';
 import { allHotelsHost, create, findById, update } from '../../services/accommodationService';
 import { useParams } from 'react-router-dom';
+import { accommodationReservations } from '../../services/reservationService';
+import HostCalendar from '../../components/Calendar/HostCalendar';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -14,6 +16,7 @@ const AccommodationPage = () => {
   const [formInitialValues, setFormInitialValues] = useState(null); // State to manage form initialValues
   
   const [accommodation, setAccommodation] = useState(null);
+  const [reservations, setReservations] = useState(null);
   const { accommodationId } = useParams();
 
   useEffect(() => {
@@ -25,6 +28,10 @@ const AccommodationPage = () => {
         })
         .catch((error) => {
           console.error("Failed to fetch accommodation:", error);
+        });
+        accommodationReservations(accommodationId).then(data => {
+            console.log("Fetched Reservations for this accommodation:", data); 
+            setReservations(data);
         });
     }
   }, [accommodationId]); 
@@ -45,22 +52,14 @@ const AccommodationPage = () => {
     <>
       <Navbar />
       <Content style={{ padding: '0 120px', marginTop: '42px' }}>
-        <Title level={2}>{accommodation.name} in {accommodation.location}</Title>
-
-        
+        <Title level={2}>{accommodation.name} in {accommodation.location}</Title> 
       </Content>
-      <Modal
-        title={isEditMode ? 'Edit Hotel' : 'Add New Hotel'}
-        visible={modalVisible}
-        onCancel={() => {
-          setModalVisible(false);
-          setIsEditMode(false);
-          setFormInitialValues(null);
-        }}
-        footer={null}
+      <HostCalendar
+        availability={accommodation.availability}
+        reservations={reservations}
       >
-      
-      </Modal>
+
+      </HostCalendar>
     </>
   );
 };
