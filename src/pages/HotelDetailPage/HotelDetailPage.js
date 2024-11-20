@@ -14,6 +14,7 @@ import { getRoles } from '@testing-library/react';
 import { createReservation } from '../../services/reservationService';
 
 import FrontCalendar from '../../components/Calendar/FrontCalendar';
+import { jwtDecode } from 'jwt-decode';
 
   const reviews = [
     {
@@ -40,6 +41,9 @@ const { Content } = Layout;
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
+const accessToken = localStorage.getItem('accessToken');
+const profileData = jwtDecode(accessToken);
+console.log(profileData)
 const HotelDetailPage = () => {
 
     const { id } = useParams();

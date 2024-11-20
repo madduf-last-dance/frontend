@@ -9,6 +9,7 @@ import HotelDetailPage from './pages/HotelDetailPage/HotelDetailPage';
 import MyHotelsPage from './pages/MyHotelsPage/MyHotelsPage';
 import HostProfilePage from './pages/HostProfilePage/HostProfilePage';
 import MyReservationsPage from './pages/MyReservationsPage/MyReservationsPage';
+import AccommodationPage from './pages/AccommodationPage/AccommodationPage';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path: '/my-hotels',
     element: <MyHotelsPage />
+  },
+  {
+    path: '/my-accommodation/:accommodationId',
+    element: <AccommodationPage />
   },
   {
     path: '/hotels/:id',
