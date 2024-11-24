@@ -26,6 +26,7 @@ const Navbar = () => {
 
   const checkLoginStatus = async () => {
     const token = localStorage.getItem('accessToken');
+    console.log("usao ovde" + token);
     if (token) {
       setIsLoggedIn(true);
       setUserProfile(jwtDecode(token));
