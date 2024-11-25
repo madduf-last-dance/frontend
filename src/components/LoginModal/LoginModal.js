@@ -12,14 +12,7 @@ const LoginModal = ({ visible, onClose }) => {
       localStorage.setItem('accessToken', accessToken);
       const profileData = jwtDecode(accessToken);
       console.log(typeof(profileData['role']),profileData['role']);
-      if(profileData['role'] === 0) {
-          localStorage.setItem('role','HOST');
-      } else if(profileData['role'] === 1) {
-          localStorage.setItem('role','GUEST');
-      } else{
-          localStorage.setItem('role','MISSING_ROLE');
-      }
-
+      localStorage.setItem('role', profileData['role']);
       message.success('You have successfully logged in!');
       window.location.reload();
     })
