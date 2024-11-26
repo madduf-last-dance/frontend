@@ -4,6 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { Modal, Input, Button, message, List, Col, Card, Row, Divider } from 'antd';
 import moment from 'moment';
+import { cancelAccepted, cancelPending } from '../../services/reservationService';
 
 const HostCalendar = ({ availability, reservations }) => {
   
@@ -103,15 +104,53 @@ const HostCalendar = ({ availability, reservations }) => {
     setIsManageModalVisible(true);
   };
 
-  const handleAcceptReservation = () => {
-    message.success(`Reservation from ${selectedReservation.startDate} to ${selectedReservation.endDate} has been accepted.`);
-    setIsManageModalVisible(false);
-  };
-  
-  const handleRejectReservation = () => {
-    message.success(`Reservation from ${selectedReservation.startDate} to ${selectedReservation.endDate} has been rejected.`);
-    setIsManageModalVisible(false);
-  };
+  const handleAcceptReservation = async (id) => {
+    if (!id) {
+        message.error("Reservation ID is missing. Cannot proceed with acceptance.");
+        return;
+    }
+
+    // try {
+    //     const response = await apiClient.post(`/reservation/accept/${id}`);
+    //     message.success(`Reservation from ${selectedReservation.startDate} to ${selectedReservation.endDate} has been accepted.`);
+    //     setIsManageModalVisible(false);
+    // } catch (error) {
+    //     message.error("Failed to accept the reservation. Please try again.");
+    //     console.error(error);
+    // }
+    };
+
+  const handleRejectReservation = async (id) => {
+    if (!id) {
+        message.error("Reservation ID is missing. Cannot proceed with rejection.");
+        return;
+    }
+    try {
+        const response = await cancelPending(id); 
+        message.success(`Reservation from ${selectedReservation.startDate} to ${selectedReservation.endDate} has been rejected.`);
+
+        setIsManageModalVisible(false);
+    } catch (error) {
+        message.error("Failed to reject the reservation. Please try again.");
+        console.error(error);
+    }
+    };
+
+  const handleRejectAcceptedReservation = async (id) => {
+    if (!id) {
+        message.error("Reservation ID is missing. Cannot proceed with rejection.");
+        return;
+    }
+
+    try {
+        const response = await cancelAccepted(id); 
+        message.success(`Reservation from ${selectedReservation.startDate} to ${selectedReservation.endDate} has been rejected.`);
+        setIsManageModalVisible(false);
+    } catch (error) {
+        message.error("Failed to reject the reservation. Please try again.");
+        console.error(error);
+    }
+    };
   
   const handleCloseModal = () => {
     setIsManageModalVisible(false);
@@ -151,19 +190,14 @@ const HostCalendar = ({ availability, reservations }) => {
   const handleRemoveAvailability = (index) => {
     const availabilityToRemove = availabilityList[index];
 
-    // Remove the availability from the list
     const updatedList = availabilityList.filter((_, i) => i !== index);
     setAvailabilityList(updatedList);
-
-    // Remove pending reservations that overlap with the availability being removed
     const filteredReservations = updatedReservations.filter((reservation) => {
       const reservationRange = generateDateRange(reservation.startDate, reservation.endDate);
       const availabilityRange = generateDateRange(availabilityToRemove.startDate, availabilityToRemove.endDate);
-      // If the reservation overlaps with the removed availability, keep it if it is not pending
       return !reservationRange.some((date) => availabilityRange.includes(date)) || reservation.status !== 'Pending';
     });
 
-    // Update the reservations state with the filtered reservations
     setUpdatedReservations(filteredReservations);
 
     message.success('Availability and pending reservations removed in deleted timeframe.');
@@ -234,29 +268,36 @@ const HostCalendar = ({ availability, reservations }) => {
               <List
                 dataSource={availabilityList}
                 renderItem={(item, index) => (
-                  <List.Item
+                    <List.Item
                     actions={[
-                      <Button
+                        <Button
                         type="link"
                         style={{
-                          color: 'red',
-                          borderRadius: '50%',
-                          border: '2px solid red',
-                          width: '30px',
-                          height: '30px',
-                          lineHeight: '28px',
-                          textAlign: 'center',
+                            color: 'red',
+                            borderRadius: '50%',
+                            border: '2px solid red',
+                            width: '30px',
+                            height: '30px',
+                            lineHeight: '28px',
+                            textAlign: 'center',
                         }}
                         onClick={() => handleRemoveAvailability(index)}
-                      >
+                        >
                         X
-                      </Button>,
+                        </Button>,
                     ]}
-                  >
-                    {`${item.startDate} - ${item.endDate}: $${item.price.toFixed(2)}`}
-                  </List.Item>
+                    >
+                    {`${moment(item.startDate).format('DD.MM.YYYY')} - ${moment(item.endDate).format('DD.MM.YYYY')}: $${item.price.toFixed(2)}`}
+                    </List.Item>
                 )}
-              />
+                />
+               <Button
+                type="primary"
+                style={{ backgroundColor: 'green', borderColor: 'green', marginTop: '20px' }}
+                onClick={handleSaveAvailabilities}
+              >
+                Save New Availabilities
+              </Button>
               <Divider>Reservations</Divider>
               <List
                 dataSource={sortedReservations}
@@ -283,14 +324,7 @@ const HostCalendar = ({ availability, reservations }) => {
                     </div>
                 </List.Item>
                 )}
-/>
-              <Button
-                type="primary"
-                style={{ backgroundColor: 'green', borderColor: 'green', marginTop: '20px' }}
-                onClick={handleSaveAvailabilities}
-              >
-                Save Changes
-              </Button>
+            />
             </div>
           </Card>
         </Col>
@@ -319,7 +353,7 @@ const HostCalendar = ({ availability, reservations }) => {
             title="Manage Reservation"
             visible={isManageModalVisible}
             onCancel={handleCloseModal}
-            footer={null}  // No default footer buttons, we use custom ones
+            footer={null} 
             width={500}
         >
             <Row>
@@ -329,7 +363,13 @@ const HostCalendar = ({ availability, reservations }) => {
                     <p><strong>Reservation ID:</strong> {selectedReservation?.id}</p>
                     <p><strong>Start Date:</strong> {selectedReservation?.startDate}</p>
                     <p><strong>End Date:</strong> {selectedReservation?.endDate}</p>
-                    <p><strong>Status:</strong> {selectedReservation?.status}</p>
+                    <p
+                        style={{
+                            color: selectedReservation?.status === 'Accepted' ? 'green' : selectedReservation?.status === 'Pending' ? 'red' : 'black',
+                        }}
+                        >
+                        <strong>Status:</strong> {selectedReservation?.status}
+                    </p>
                     <p><strong>Price:</strong> ${selectedReservation?.price}</p>
                 </div>
                 </Card>
@@ -341,25 +381,32 @@ const HostCalendar = ({ availability, reservations }) => {
             {/* Action Buttons */}
             <Row justify="end">
                 {selectedReservation?.status === 'Pending' ? (
-                <>
+                    <>
                     <Button
-                    type="primary"
-                    style={{ backgroundColor: 'green', borderColor: 'green', marginRight: '10px' }}
-                    onClick={handleAcceptReservation}
+                        type="primary"
+                        style={{ backgroundColor: 'green', borderColor: 'green', marginRight: '10px' }}
+                        onClick={() => handleAcceptReservation(selectedReservation.id)}
                     >
-                    Accept
+                        Accept
                     </Button>
                     <Button
+                        type="danger"
+                        style={{ backgroundColor: 'red', borderColor: 'red', marginRight: '10px', color: 'white' }}
+                        onClick={() => handleRejectReservation(selectedReservation.id)}
+                    >
+                        Reject
+                    </Button>
+                    </>
+                ) : (
+                    <Button
                     type="danger"
-                    style={{ backgroundColor: 'red', borderColor: 'red', marginRight: '10px', color: 'black'}}
-                    onClick={handleRejectReservation}
+                    style={{ backgroundColor: 'red', borderColor: 'red', marginRight: '10px', color: 'white' }}
+                    onClick={() => handleRejectAcceptedReservation(selectedReservation.id)}
                     >
                     Reject
                     </Button>
-                </>
-                ) : (
-                <Button onClick={handleCloseModal}>Close</Button>
                 )}
+                <Button onClick={handleCloseModal}>Close</Button>
             </Row>
         </Modal>
     </div>
