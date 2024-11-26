@@ -1,83 +1,99 @@
 // src/components/Navbar.js
 import React, { useState, useEffect } from 'react';
 import { Menu, Dropdown, Button } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
 import SignUpModal from '../SignUpModal/SignUpModal';
 import LoginModal from '../LoginModal/LoginModal';
 import { Link } from 'react-router-dom';
-
 import './Navbar.css';
+import GuestNavbar from './GuestNavbar';
+import NonregisterNavbar from './NonregisterNavbar';
+import { jwtDecode } from 'jwt-decode';
+import HostNavbar from './HostNavbar';
 
 const Navbar = () => {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userProfile, setUserProfile] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
 
-    const [signUpVisible, setSignUpVisible] = useState(false);
-    const [loginVisible, setLoginVisible] = useState(false);
-    const [signUpRole, setSignUpRole] = useState('guest'); // New state for sign-up role
+  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [signUpVisible, setSignUpVisible] = useState(false);
+  const [loginVisible, setLoginVisible] = useState(false);
+  const [signUpRole, setSignUpRole] = useState('guest'); // New state for sign-up role
 
-    useEffect(() => {
-        checkLoginStatus();
-    }, []);
-    
-    const checkLoginStatus = async () => {
-      try {
-          const profileData = {
-              "username": "marko",
-              "password": "aaa"
-          }
-          setUserProfile(profileData);
-          setIsLoggedIn(true);
-      } catch (error) {
-          console.error('User not logged in:', error);
-          setIsLoggedIn(false);
-          setUserProfile(null);
-      }
-    };
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
 
-    const showSignUpModal = (role) => {
-        setSignUpRole(role);
-        setSignUpVisible(true);
-    };
-
-    const closeSignUpModal = () => {
-        setSignUpVisible(false);
-    };
-
-    const showLoginModal = () => {
-        setLoginVisible(true);
-    };
-
-    const closeLoginModal = () => {
-        setLoginVisible(false);
-    };
-
-    const handleLogout = () => {
-      localStorage.removeItem('accessToken');
+  const checkLoginStatus = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setIsLoggedIn(true);
+      setUserProfile(jwtDecode(token));
+    } else {
       setIsLoggedIn(false);
       setUserProfile(null);
-    };
-
-    const handleReservations = () => {
-      const reservations = [
-
-      ]
     }
+  };
 
-    const menu = isLoggedIn ? (
-        <Menu>
+  const showSignUpModal = (role) => {
+    setSignUpRole(role);
+    setSignUpVisible(true);
+  };
+
+  const closeSignUpModal = () => {
+    setSignUpVisible(false);
+  };
+
+  const showLoginModal = () => {
+    setLoginVisible(true);
+  };
+
+  const closeLoginModal = () => {
+    setLoginVisible(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('role');
+    setIsLoggedIn(false);
+    setUserProfile(null);
+    window.location.reload();
+  };
+
+
+  const handleMenu = () => {
+    if (isLoggedIn) {
+      if (role === 'GUEST') {
+        return (
+          <Menu>
+            <Menu.Item key="1">
+              <Link to={`/profiles/${userProfile.username}`}>Profile</Link>
+            </Menu.Item>
+            <Menu.Item key="2">
+              <Link to={`/reservations/${userProfile.username}`}>Reservations GUEST</Link>
+            </Menu.Item>
+            <Menu.Item key="3" onClick={handleLogout}>
+              Log out
+            </Menu.Item>
+          </Menu>
+        );
+      }
+      else if (role === 'HOST') {
+        return (<Menu>
           <Menu.Item key="1">
-            <Link to={`/profiles/${ userProfile.username }`}>Profile</Link>
+            <Link to={`/profiles/${userProfile.username}`}>Profile</Link>
           </Menu.Item>
-          <Menu.Item key="2" onClick={handleReservations}>
-            <Link to={`/reservations/${ userProfile.username }`}>Reservations</Link>
+          <Menu.Item key="2">
+            <Link to={`/reservations/${userProfile.username}`}>Reservations HOST</Link>
           </Menu.Item>
           <Menu.Item key="3" onClick={handleLogout}>
             Log out
           </Menu.Item>
-        </Menu>
-      ) : (
+        </Menu>);
+      }
+    }
+    else {
+      return (
         <Menu>
           <Menu.Item key="1" onClick={() => showSignUpModal('guest')}>
             Sign up as Guest
@@ -90,22 +106,22 @@ const Navbar = () => {
           </Menu.Item>
         </Menu>
       );
+    }
+  }
 
-    return (
+  const menu = handleMenu();
+
+  return (
     <div className="navbar">
-        <div className="navbar-logo">
-            <Link to="/">Hotel reservation app</Link>
-        </div>
-        <div className="navbar-menu">
-            <Link to="/my-hotels" className="navbar-menu-item">My Hotels</Link>
-            <Dropdown overlay={menu} trigger={['click']}>
-                <Button icon={<UserOutlined />} />
-            </Dropdown>
-        </div>
-        <SignUpModal visible={signUpVisible} onClose={closeSignUpModal} role={signUpRole}/>
-        <LoginModal visible={loginVisible} onClose={closeLoginModal} />
+      {isLoggedIn ? (
+        role === 'HOST' ? (<HostNavbar menu={menu}></HostNavbar>) : (<GuestNavbar menu={menu}></GuestNavbar>)
+      ) : (
+        <NonregisterNavbar menu={menu}></NonregisterNavbar>
+      )}
+      <SignUpModal visible={signUpVisible} onClose={closeSignUpModal} role={signUpRole} />
+      <LoginModal visible={loginVisible} onClose={closeLoginModal} />
     </div>
-    );
+  );
 };
 
 export default Navbar;

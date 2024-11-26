@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://api-gateway.example',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -10,7 +10,6 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('accessToken');
-  console.log(token, "USING");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
