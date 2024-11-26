@@ -4,6 +4,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import HotelForm from '../../components/HotelForm/HotelForm';
 import './MyHotelsPage.css'; // Import the CSS file
 import { allHotelsHost, create, update } from '../../services/accommodationService';
+import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -13,6 +14,8 @@ const MyHotelsPage = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [formInitialValues, setFormInitialValues] = useState(null); // State to manage form initialValues
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch host's hotels from backend
@@ -70,6 +73,10 @@ const MyHotelsPage = () => {
     setFormInitialValues(hotel); // Initialize form with empty values
     setModalVisible(true);
   };
+  //console.log(hotels)
+  const openAccommodation = (id) => {
+    navigate(`/my-accommodation/${id}`);
+  };
 
   return (
     <>
@@ -95,10 +102,16 @@ const MyHotelsPage = () => {
                   </Carousel>
                 }
                 actions={[
-                  <Button type="link" onClick={() => openEditModal(hotel)}>
+                  <Button type="link" 
+                  onClick={(e) => {
+                    e.stopPropagation(); 
+                    openEditModal(hotel);
+                    }}
+                  >
                     Edit
                   </Button>,
                 ]}
+                onClick={() => openAccommodation(hotel.id)}
               >
                 <Card.Meta
                   title={hotel.name}

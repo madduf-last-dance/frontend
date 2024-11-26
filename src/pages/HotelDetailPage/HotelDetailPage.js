@@ -7,10 +7,14 @@ import moment from 'moment'; // Import moment library
 import { useParams } from 'react-router-dom';
 import Navbar from '../../components/Navbar/Navbar';
 import { findById } from '../../services/accommodationService';
+import { accommodationReservations } from '../../services/reservationService';
 import { useEffect } from 'react';
 import dayjs from 'dayjs';
 import { getRoles } from '@testing-library/react';
 import { createReservation } from '../../services/reservationService';
+
+import FrontCalendar from '../../components/Calendar/FrontCalendar';
+import { jwtDecode } from 'jwt-decode';
 
   const reviews = [
     {
@@ -37,14 +41,38 @@ const { Content } = Layout;
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
+const accessToken = localStorage.getItem('accessToken');
+const profileData = jwtDecode(accessToken);
+console.log(profileData)
 const HotelDetailPage = () => {
 
     const { id } = useParams();
 
     const [hotel, setHotel] = useState(null);
-  useEffect(() => {
-    findById(id).then(data => {setHotel(data);})
-  },[id]);
+    const [reservations, setReservations] = useState(null);
+
+    useEffect(() => {
+      findById(id).then(data => {
+        console.log("Fetched Data:", data); 
+        setHotel(data);
+      });
+      accommodationReservations(id).then(data => {
+        console.log("Fetched Reservations:", data); 
+        setReservations(data);
+      });
+    }, [id]);
+
+    // -- Calendar --
+
+    // Show green when there are avaliable dates
+    const availabilityEvents = hotel?.availability.map(avail => ({
+      title: 'Available',
+      start: avail.startDate,
+      end: avail.endDate,
+      display: 'background',
+      backgroundColor: 'green',
+      borderColor: 'green',
+    })) || [];
 
     const [selectedDates, setSelectedDates] = useState([]);
     const [guests, setGuests] = useState(1);
@@ -58,27 +86,35 @@ const HotelDetailPage = () => {
     };
   
     const handleReservation = () => {
-      // Handle reservation logic here
+      
+      if (!selectedDates || selectedDates.length < 2) {
+        console.error("Please select a valid date range.");
+        return;
+      }
       console.log("Selected Dates:", selectedDates);
       console.log("Number of Guests:", guests);
       // Add your reservation logic, e.g., redirect to a reservation page, etc.
       const reservationData = {
-          startDate: dayjs(selectedDates[0], 'YYYY-MM-DD'),
-          endDate: dayjs(selectedDates[1], 'YYYY-MM-DD'),
-          numberOfGuests: guests,
+          startDate: selectedDates[0],
+          endDate: selectedDates[1],
+          guestNumber: guests,
           accommodationId: hotel.id,
           guestId: 1,
       };
-    createReservation(reservationData).then(data => {
-      console.log(data);
-    }
-    )
+      createReservation(reservationData)
+      .then((data) => {
+        console.log("Reservation created successfully:", data);
+      })
+      .catch((error) => {
+        console.error("Error creating reservation. Reservation data:", reservationData);
+        console.error("Error details:", error);
+      });
     };
 
     if (!hotel) {
       return <div>Hotel not found</div>;
     }
-
+    
     return (
       <>
         <Navbar />
@@ -119,12 +155,14 @@ const HotelDetailPage = () => {
             {/* Right Side - Reservation Form */}
             <Col span={8}>
               <Card title="Reservation" style={{ width: '100%' }}>
-                <Title level={4}>Select Dates</Title>
-                <RangePicker
-                  style={{ width: '100%' }}
-                  onChange={handleDateChange}
-                  disabledDate={(current) => current && current < moment().startOf('day')}
+              <div className="App">
+                <h1>Select Dates:</h1>
+                <FrontCalendar
+                  availability={hotel.availability}
+                  reservations={reservations}
+                  onDatesSelected={(dates) => setSelectedDates([dates.start, dates.end])}
                 />
+                </div>
 
                 <Divider />
 
