@@ -42,8 +42,9 @@ const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 const accessToken = localStorage.getItem('accessToken');
-const profileData = jwtDecode(accessToken);
-console.log(profileData)
+if(accessToken) {
+  const profileData = jwtDecode(accessToken);
+}
 const HotelDetailPage = () => {
 
     const { id } = useParams();
