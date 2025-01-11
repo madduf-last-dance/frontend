@@ -49,3 +49,12 @@ export const findById = async (id) => {
     }
 };
 
+export const saveAvalabilities = async (id, data) => {
+    try {
+        const response = await apiClient.post(`/accommodation/saveAvailabilities/${id}`, data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+

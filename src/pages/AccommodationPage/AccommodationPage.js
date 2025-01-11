@@ -3,7 +3,7 @@ import { Layout, Card, Row, Col, Button, Modal, Typography,Input, Carousel,Divid
 import Navbar from '../../components/Navbar/Navbar';
 import { allHotelsHost, create, findById, update } from '../../services/accommodationService';
 import { useParams } from 'react-router-dom';
-import { accommodationReservations,cancelAccepted,cancelPending } from '../../services/reservationService';
+import { acceptReservation, accommodationReservations,cancelAccepted,cancelPending } from '../../services/reservationService';
 import HostCalendar from '../../components/Calendar/HostCalendar';
 import AvailabilityListSection from './AvailabilityListSection';
 import accommodationPageReducer from './reducer';
@@ -13,7 +13,6 @@ const { Title } = Typography;
 
 const AccommodationPage = () => {
   const {accommodationId } = useParams();
-  const [selectedReservation, setSelectedReservation] = useState(null);
 
   const initialState = {
     accommodation: null,
@@ -25,6 +24,8 @@ const AccommodationPage = () => {
     selectedDates: { start: null, end: null },
     availabilityList: null,
     isManageModalVisible: false,
+    selectedReservation: null,
+    accommodationId: accommodationId,
   }
   const [state, dispatch] = useReducer(
     accommodationPageReducer, initialState
@@ -58,9 +59,12 @@ const AccommodationPage = () => {
       return;
     }
 
+    var endDate = new Date(state.selectedDates.end);
+    endDate.setDate(endDate.getDate() + 1);
+    const formattedDate = endDate.toISOString().split('T')[0];
     const newAvailability = {
       startDate: state.selectedDates.start,
-      endDate: state.selectedDates.end,
+      endDate: formattedDate,
       price: parseFloat(state.pricePerDay),
     };
     dispatch({ type: 'availabilityList', 
@@ -83,6 +87,11 @@ const AccommodationPage = () => {
       payload: { isModalVisible: false }});
   };
 
+  const handleCloseManageModal = () => {
+    dispatch({ type: 'isManageModalVisible', 
+      payload: { isModalVisible: false }});
+  };
+
   const handleRejectReservation = async (id) => {
     if (!id) {
         message.error("Reservation ID is missing. Cannot proceed with rejection.");
@@ -90,7 +99,7 @@ const AccommodationPage = () => {
     }
     try {
         const response = await cancelPending(id); 
-        message.success(`Reservation from ${selectedReservation.startDate} to ${selectedReservation.endDate} has been rejected.`);
+        message.success(`Reservation from ${state.selectedReservation.startDate} to ${state.selectedReservation.endDate} has been rejected.`);
 
         dispatch({ type: 'isManageModalVisible', 
           payload: { isManageModalVisible: false }});
@@ -108,7 +117,7 @@ const AccommodationPage = () => {
 
     try {
         const response = await cancelAccepted(id); 
-        message.success(`Reservation from ${selectedReservation.startDate} to ${selectedReservation.endDate} has been rejected.`);
+        message.success(`Reservation from ${state.selectedReservation.startDate} to ${state.selectedReservation.endDate} has been rejected.`);
         dispatch({ type: 'isManageModalVisible', 
           payload: { isManageModalVisible: false }});
     } catch (error) {
@@ -124,14 +133,15 @@ const AccommodationPage = () => {
         return;
     }
 
-    // try {
-    //     const response = await apiClient.post(`/reservation/accept/${id}`);
-    //     message.success(`Reservation from ${selectedReservation.startDate} to ${selectedReservation.endDate} has been accepted.`);
-    //     setIsManageModalVisible(false);
-    // } catch (error) {
-    //     message.error("Failed to accept the reservation. Please try again.");
-    //     console.error(error);
-    // }
+    try {
+        const response = await acceptReservation(id);
+        message.success(`Reservation from ${state.selectedReservation.startDate} to ${state.selectedReservation.endDate} has been accepted.`);
+        dispatch({ type: 'isManageModalVisible', 
+          payload: { isManageModalVisible: false }});
+    } catch (error) {
+        message.error("Failed to accept the reservation. Please try again.");
+        console.error(error);
+    }
     };
 
 
@@ -187,7 +197,7 @@ const AccommodationPage = () => {
           placeholder="Enter price per day"
           value={state.pricePerDay}
           onChange={(e) => dispatch({ type: 'pricePerDay', 
-            payload: { pricePerDay: '' }})}
+            payload: { pricePerDay: e.target.value }})}
           type="number"
         />
       </Modal>
@@ -196,9 +206,7 @@ const AccommodationPage = () => {
         <Modal
             title="Manage Reservation"
             visible={state.isManageModalVisible}
-            onCancel={
-              
-              handleCloseModal}
+            onCancel={handleCloseManageModal}
             footer={null} 
             width={500}
         >
@@ -206,17 +214,17 @@ const AccommodationPage = () => {
             <Col span={24}>
                 <Card>
                 <div>
-                    <p><strong>Reservation ID:</strong> {selectedReservation?.id}</p>
-                    <p><strong>Start Date:</strong> {selectedReservation?.startDate}</p>
-                    <p><strong>End Date:</strong> {selectedReservation?.endDate}</p>
+                    <p><strong>Reservation ID:</strong> {state.selectedReservation?.id}</p>
+                    <p><strong>Start Date:</strong> {state.selectedReservation?.startDate}</p>
+                    <p><strong>End Date:</strong> {state.selectedReservation?.endDate}</p>
                     <p
                         style={{
-                            color: selectedReservation?.status === 'Accepted' ? 'green' : selectedReservation?.status === 'Pending' ? 'red' : 'black',
+                            color: state.selectedReservation?.status === 'Accepted' ? 'green' : state.selectedReservation?.status === 'Pending' ? 'red' : 'black',
                         }}
                         >
-                        <strong>Status:</strong> {selectedReservation?.status}
+                        <strong>Status:</strong> {state.selectedReservation?.status}
                     </p>
-                    <p><strong>Price:</strong> ${selectedReservation?.price}</p>
+                    <p><strong>Price:</strong> ${state.selectedReservation?.price}</p>
                 </div>
                 </Card>
             </Col>
@@ -226,19 +234,19 @@ const AccommodationPage = () => {
 
             {/* Action Buttons */}
             <Row justify="end">
-                {selectedReservation?.status === 'Pending' ? (
+                {state.selectedReservation?.status === 'Pending' ? (
                     <>
                     <Button
                         type="primary"
                         style={{ backgroundColor: 'green', borderColor: 'green', marginRight: '10px' }}
-                        onClick={() => handleAcceptReservation(selectedReservation.id)}
+                        onClick={() => handleAcceptReservation(state.selectedReservation.id)}
                     >
                         Accept
                     </Button>
                     <Button
                         type="danger"
                         style={{ backgroundColor: 'red', borderColor: 'red', marginRight: '10px', color: 'white' }}
-                        onClick={() => handleRejectReservation(selectedReservation.id)}
+                        onClick={() => handleRejectReservation(state.selectedReservation.id)}
                     >
                         Reject
                     </Button>
@@ -247,12 +255,12 @@ const AccommodationPage = () => {
                     <Button
                     type="danger"
                     style={{ backgroundColor: 'red', borderColor: 'red', marginRight: '10px', color: 'white' }}
-                    onClick={() => handleRejectAcceptedReservation(selectedReservation.id)}
+                    onClick={() => handleRejectAcceptedReservation(state.selectedReservation.id)}
                     >
                     Reject
                     </Button>
                 )}
-                <Button onClick={handleCloseModal}>Close</Button>
+                {/* <Button onClick={handleCloseModal}>Close</Button> */}
             </Row>
         </Modal>
       </div>

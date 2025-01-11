@@ -1,5 +1,4 @@
 const accommodationPageReducer = (state, action) => {
-  console.log(state);
   switch (action.type) {
     case 'manageModalVisible': 
       return {
@@ -45,7 +44,7 @@ const accommodationPageReducer = (state, action) => {
     case 'pricePerDay':
       return {
         ...state,
-        isModalVisible: action.payload.pricePerDay,
+        pricePerDay: action.payload.pricePerDay,
     }  
     case 'availabilityList': 
       return {
@@ -56,6 +55,11 @@ const accommodationPageReducer = (state, action) => {
       return {
         ...state,
         isManageModalVisible: action.payload.isManageModalVisible,
+      }
+    case 'selectedReservation':
+      return {
+        ...state,
+        selectedReservation: action.payload.selectedReservation,
       }
     default:
       throw new Error(`Unknown action: ${action.type}`);

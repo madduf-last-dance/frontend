@@ -1,4 +1,4 @@
-const generateDateRange = (start, end) => {
+export const generateDateRange = (start, end) => {
     const range = [];
     let currentDate = new Date(start);
 
@@ -8,4 +8,9 @@ const generateDateRange = (start, end) => {
     }
     return range;
 };
-export default generateDateRange;
+export const increaseDateByOneDay = (date) => {
+    var newDate = new Date(date);
+    newDate.setDate(newDate.getDate() + 1);
+    const formattedDate = newDate.toISOString().split('T')[0];
+    return formattedDate;
+};

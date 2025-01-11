@@ -2,7 +2,8 @@ import { Divider, List, Layout, Card, Row, Col, Button, Modal, Typography, Carou
 import moment, { updateLocale } from 'moment';
 import React, { useState } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
-import generateDateRange from '../../utils/dateUtils';
+import {generateDateRange} from '../../utils/dateUtils';
+import { saveAvalabilities } from '../../services/accommodationService';
 
 const AvailabilityListSection = ({ state, dispatch }) => {
 
@@ -10,14 +11,17 @@ const AvailabilityListSection = ({ state, dispatch }) => {
 
 
 const handleManageReservation = (reservation) => {
-  // setSelectedReservation(reservation);
 
-  dispatch({ type: 'manageModal', 
+  dispatch({ type: 'isManageModalVisible', 
     payload: { ...state,
     isManageModalVisible: true,
   }});
-    // setIsManageModalVisible(true);
+  dispatch({ type: 'selectedReservation', 
+    payload: { ...state,
+      selectedReservation: reservation,
+  }});
 };
+
 
 
 const handleRemoveAvailability = (index) => {
@@ -36,8 +40,9 @@ const handleRemoveAvailability = (index) => {
     message.success('Availability and pending reservations removed in deleted timeframe.');
   };
   const handleSaveAvailabilities = () => {
+    saveAvalabilities(state.accommodationId, state.availabilityList);
     message.success('Availabilities saved!');
-  };
+  }
 
   function handleAddTask() {
     // dispatch({
@@ -47,30 +52,14 @@ const handleRemoveAvailability = (index) => {
   }
 return (
   <Col xs={24} sm={12}>
-        <Card title="Current Availabilities" style={{ width: '100%' }}>
+        <Card style={{ width: '100%' }}>
           <div style={{ marginTop: '20px' }}>
-            <Button
-              type="primary"
-              style={{
-                backgroundColor: 'green',
-                borderColor: 'green',
-                marginBottom: '20px',
-                textAlign: 'center',
-              }}
-              onClick={() => {
-                dispatch({ type: 'selectedDates', 
-                  payload: { selectedDates: { start: null, end: null } }});
-                dispatch({ type: 'temporaryHighlight', 
-                  payload: { temporaryHighlight: [] }});
-                dispatch({ type: 'isAddingAvailability', 
-                  payload: { isAddingAvailability: true }});
-                message.info('Select a start and end date for availability.');
-              }}
-            >
-              Add New Availability
-            </Button>
-            <Divider />
+            <Divider>Availabilities</Divider>
             <List
+              style={{
+                overflowY: 'auto', // Enable vertical scrolling
+                maxHeight: 400,
+              }}
               dataSource={state.availabilityList}
               renderItem={(item, index) => (
                   <List.Item
@@ -95,21 +84,46 @@ return (
                   </List.Item>
               )}
               />
-              <Button
+
+            <Button
               type="primary"
-              style={{ backgroundColor: 'green', borderColor: 'green', marginTop: '20px' }}
+              style={{
+                backgroundColor: 'green',
+                borderColor: 'green',
+                marginRight: '5px',
+                textAlign: 'center',
+              }}
+              onClick={() => {
+                dispatch({ type: 'selectedDates', 
+                  payload: { selectedDates: { start: null, end: null } }});
+                dispatch({ type: 'temporaryHighlight', 
+                  payload: { temporaryHighlight: [] }});
+                dispatch({ type: 'isAddingAvailability', 
+                  payload: { isAddingAvailability: true }});
+                message.info('Select a start and end date for availability.');
+              }}
+            >
+              Add New Availability
+            </Button>
+            <Button
+              type="primary"
+              style={{ backgroundColor: 'green', borderColor: 'green', marginTop: '20px'}}
               onClick={handleSaveAvailabilities}
             >
               Save New Availabilities
             </Button>
-            <Button onClick={handleAddTask}>Test</Button>
+            {/* <Button onClick={handleAddTask}>Test</Button> */}
             <Divider>Reservations</Divider>
             <List
               dataSource={state.reservations}
+              style={{
+                overflowY: 'auto', // Enable vertical scrolling
+                maxHeight: 400,
+              }}
               renderItem={(item) => (
                   <List.Item
                   style={{
-                      border: item.status === 'Pending' ? '2px solid gold' : 'none',
+                      border: item.status === 'Pending' ? '1px solid red' : 'none',
                       borderRadius: '5px',
                   }}
                   actions={[

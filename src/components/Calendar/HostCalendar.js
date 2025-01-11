@@ -3,15 +3,13 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { message, Card } from 'antd';
-import generateDateRange from '../../utils/dateUtils';
+import {increaseDateByOneDay, generateDateRange} from '../../utils/dateUtils';
 
 
 const HostCalendar = ({ state, dispatch }) => {
-  
-
   const availabilityEvents = state.availabilityList.map((avail) => ({
     start: avail.startDate,
-    end: avail.endDate,
+    end: increaseDateByOneDay(avail.endDate),
     display: 'background',
     backgroundColor: 'green',
     borderColor: 'green',
@@ -24,8 +22,10 @@ const HostCalendar = ({ state, dispatch }) => {
     end: reservation.endDate,
     title: `${reservation.status} Reservation`,
     backgroundColor: reservation.status === 'Accepted' ? 'green' : 'red',
+    borderColor: 'transparent',
     textColor: 'white',
-    borderColor: reservation.status === 'Accepted' ? 'darkred' : 'darkgray',
+    status: reservation.status,
+    reservationObj: reservation
   }));
 
   const handleDateClick = (info) => {
@@ -87,19 +87,35 @@ const HostCalendar = ({ state, dispatch }) => {
     });
   };
 
+  const handleReservationClick = (info) => {
+    var eventObj = info.event.extendedProps;
+    if(eventObj.status) {
+      dispatch({ type: 'isManageModalVisible', 
+        payload: { ...state,
+        isManageModalVisible: true,
+      }});
+      dispatch({ type: 'selectedReservation', 
+        payload: { ...state,
+          selectedReservation: eventObj.reservationObj,
+      }});
+    }
+
+  }
+
   const events = [...availabilityEvents, ...reservationEvents, ...state.temporaryHighlight];
 
   return (
-    <Card title="Reservation" style={{ width: '100%' }}>
+    <Card style={{ width: '100%' }}>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         events={events}
         dateClick={handleDateClick}
+        eventClick={handleReservationClick}
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek',
+          right: 'dayGridMonth',
         }}
         eventContent={(eventInfo) => (
           <div
@@ -109,7 +125,7 @@ const HostCalendar = ({ state, dispatch }) => {
               justifyContent: 'center',
               height: '100%',
               textAlign: 'center',
-              color: eventInfo.event.extendedProps.textColor || 'black',
+              color: eventInfo.event.textColor || 'black',
             }}
           >
             {eventInfo.event.title}

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://api-gateway.example',
+    baseURL: 'http://192.168.0.34.nip.io',
     headers: {
         'Content-Type': 'application/json',
     },

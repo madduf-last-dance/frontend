@@ -43,3 +43,12 @@ export const cancelAccepted = async (id) => {
         throw error;
     }
 };
+
+export const acceptReservation = async (id) => {
+    try {
+        const response = await apiClient.get(`/reservation/accept/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
