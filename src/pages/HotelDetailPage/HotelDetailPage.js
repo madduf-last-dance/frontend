@@ -112,9 +112,21 @@ const HotelDetailPage = () => {
       });
     };
 
+
     if (!hotel) {
       return <div>Hotel not found</div>;
     }
+          // Display a loading message while the accommodation is being fetched
+  if (!reservations) {
+    return (
+      <>
+        <Navbar />
+        <Content style={{ padding: '0 120px', marginTop: '42px' }}>
+          <Title level={2}>Loading reservations...</Title>
+        </Content>
+      </>
+    );
+  }
     
     return (
       <>
@@ -122,7 +134,7 @@ const HotelDetailPage = () => {
         <Content style={{ padding: '0 120px', marginTop: "42px"}}>
           <Row gutter={[16, 16]}>
             {/* Left Side - Hotel Details */}
-            <Col span={10}>
+            <Col span={12}>
               <Card
                 title={hotel.name}
                 bordered={true}
@@ -131,7 +143,9 @@ const HotelDetailPage = () => {
                 <Carousel autoplay>
                   {hotel.photos.map((photo, index) => (
                     <div key={index}>
-                      <img src={photo} alt={`Hotel ${index}`} style={{ width: '100%' }} />
+                      <img 
+                      src={`data:image/png;base64,${photo}`} 
+                      alt={`Hotel ${index}`} style={{ width: '100%' }} />
                     </div>
                   ))}
                 </Carousel>
@@ -154,7 +168,7 @@ const HotelDetailPage = () => {
             </Col>
 
             {/* Right Side - Reservation Form */}
-            <Col span={8}>
+            <Col span={12}>
               <Card title="Reservation" style={{ width: '100%' }}>
               <div className="App">
                 <h1>Select Dates:</h1>

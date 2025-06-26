@@ -3,8 +3,9 @@ import { Layout, Card, Row, Col, Button, Modal, Typography, Carousel,message } f
 import Navbar from '../../components/Navbar/Navbar';
 import HotelForm from '../../components/HotelForm/HotelForm';
 import './MyHotelsPage.css'; // Import the CSS file
-import { allHotelsHost, create, update } from '../../services/accommodationService';
+import { allHotelsHost, deleteAccommodation, create, update } from '../../services/accommodationService';
 import { useNavigate } from 'react-router-dom';
+import { DeleteOutlined } from '@ant-design/icons';
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -73,6 +74,25 @@ const MyHotelsPage = () => {
     setFormInitialValues(hotel); // Initialize form with empty values
     setModalVisible(true);
   };
+
+  const openDeleteModal = (hotel) => {
+    Modal.confirm({
+      title: 'Are you sure you want to delete this accommodation?',
+      icon: <DeleteOutlined />,
+      content: 'This action cannot be undone.',
+      onOk() {
+        deleteAccommodation(hotel.id).then( _ => {
+          message.success('Accommodation deleted');
+          allHotelsHost().then(
+            data => { setHotels(data); });
+          }
+        );
+      },
+      onCancel() {
+        console.log('Cancelled');
+      },
+    });
+  }
   //console.log(hotels)
   const openAccommodation = (id) => {
     navigate(`/my-accommodation/${id}`);
@@ -96,7 +116,7 @@ const MyHotelsPage = () => {
                   <Carousel autoplay>
                     {hotel.photos.map((photo, index) => (
                       <div key={index}>
-                        <img src={photo} alt={`Hotel ${index}`} style={{ width: '100%' }} />
+                        <img src={`data:image/png;base64,${photo}`} alt={`Hotel ${index}`} style={{ width: '100%' }} />
                       </div>
                     ))}
                   </Carousel>
@@ -109,6 +129,15 @@ const MyHotelsPage = () => {
                     }}
                   >
                     Edit
+                  </Button>,
+                  <Button type="link" 
+                  danger
+                  onClick={(e) => {
+                    e.stopPropagation(); 
+                    openDeleteModal(hotel);
+                    }}
+                  >
+                    Delete
                   </Button>,
                 ]}
                 onClick={() => openAccommodation(hotel.id)}

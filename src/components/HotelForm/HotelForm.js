@@ -1,11 +1,16 @@
-import React, { useEffect } from 'react';
-import { Form, Input, Button, DatePicker, InputNumber, Upload, Checkbox } from 'antd';
+import React, { useEffect, useState  } from 'react';
+import { Form, Input, Button, DatePicker, InputNumber, Upload, Checkbox, Select } from 'antd';
 import { UploadOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 const HotelForm = ({ initialValues, onFinish }) => {
   const [form] = Form.useForm();
+  const options = [{
+    value: 'pera',
+    label: 'pera',}]
 
+  const [base64, setBase64] = useState('');
+  const [baseImages64, setBaseImages64] = useState([]);
   useEffect(() => {
     if (initialValues) {
       form.setFieldsValue({
@@ -37,7 +42,17 @@ const HotelForm = ({ initialValues, onFinish }) => {
     return [];
   };
 
-  const onFinishHandler = (values) => {
+  const onFinishHandler = async (values) => {
+
+    const reader = new FileReader();
+  
+    // reader.onload = () => {
+    //   const base64String = reader.result.replace("data:", "")
+    //   .replace(/^.+,/, "");
+    //   let storedBase64String = base64String;
+    //   setBase64(storedBase64String);
+    // };
+    // console.log(values.photos);
     const formattedValues = {
       ...values,
       availability: values.availability.map(a => ({
@@ -45,11 +60,43 @@ const HotelForm = ({ initialValues, onFinish }) => {
         startDate: a.startDate.format('YYYY-MM-DD'),
         endDate: a.endDate.format('YYYY-MM-DD')
       })),
-      photos: values.photos.map(file => file.url || URL.createObjectURL(file.originFileObj))
+      photos: values.photos.map(file => {
+        
+        return base64;  
+
+        // if(file.originFileObj) {
+        //   reader.readAsDataURL(file.originFileObj); 
+        //   return base64;  
+        // } else {
+        //   return file.url;
+        // }
+      }),
     };
     onFinish(formattedValues);
   };
+
+  const handleUploadChange = async (info) => {
+    const files = info.fileList.map(file => file.originFileObj).filter(Boolean); // Get all files from fileList
+    const base64Array = await Promise.all(files.map(file => convertToBase64(file))); // Convert all files to base64
+    console.log(base64Array);
+    if (info.file.status === 'done' || info.file.status === 'uploading') {
+      const base64 = await convertToBase64(info.file.originFileObj);
+      setBase64(base64);
+    }
+  };
+
+    // Function to convert file to base64
+    const convertToBase64 = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
+    };
+
   return (
+    <>
     <Form form={form} layout="vertical" onFinish={onFinishHandler}>
       <Form.Item
         label="ID"
@@ -98,6 +145,7 @@ const HotelForm = ({ initialValues, onFinish }) => {
           listType="picture"
           multiple
           beforeUpload={() => false} // Prevent automatic upload
+          onChange={handleUploadChange}
         >
           <Button icon={<UploadOutlined />}>Upload</Button>
         </Upload>
@@ -200,6 +248,15 @@ const HotelForm = ({ initialValues, onFinish }) => {
         </Button>
       </Form.Item>
     </Form>
+  <Select
+  mode="multiple"
+  placeholder="Please select"
+  defaultValue={['a10', 'c12']}
+  // onChange={handleChange}
+  style={{ width: '100%' }}
+  options={options}
+/>
+</>
   );
 };
 
