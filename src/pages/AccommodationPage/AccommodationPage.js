@@ -164,6 +164,21 @@ const AccommodationPage = () => {
       <Content style={{ padding: '0 120px', marginTop: '42px' }}>
         <Title level={2} style={{ textAlign: 'center' }}>{state.accommodation.name} in {state.accommodation.location}</Title>
       </Content>
+      <div>
+      <Row gutter={8} style={{ marginTop: '20px' }} justify="center" align="middle" >
+          {/* Calendar Section */}
+          <Col xs={22} sm={12}>
+          <Carousel>
+            {state.accommodation.photos.map((photo, index) => (
+              <div key={index}>
+                <img src={`data:image/png;base64,${photo}`} alt={`Hotel ${index}`} style={{ width: '100%' }} />
+              </div>
+            ))}
+          </Carousel>
+          </Col>
+      </Row>
+      </div>
+
       <div style={{ margin: '20px' }}>
         <Row gutter={[16, 16]} style={{ marginTop: '20px' }}>
           {/* Calendar Section */}

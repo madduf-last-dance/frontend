@@ -58,3 +58,12 @@ export const saveAvalabilities = async (id, data) => {
     }
 };
 
+export const deleteAccommodation = async (id) => {
+    try {
+        const response = await apiClient.delete(`/accommodation/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+

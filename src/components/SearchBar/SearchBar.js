@@ -31,7 +31,7 @@ export default function SearchBar({ updateHotels }) {
 
   const handleSearch = () => {
     const apiClient = axios.create({
-      baseURL: 'http://api-gateway.example',
+      baseURL: 'http://172.29.243.68.nip.io',
       headers: {
           'Content-Type': 'application/json',
       },
