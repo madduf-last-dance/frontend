@@ -79,6 +79,10 @@ const AccommodationPage = () => {
       payload: { pricePerDay: '' }});
     dispatch({ type: 'isModalVisible', 
       payload: { isModalVisible: false }});
+    dispatch({ type: 'isModalVisible', 
+      payload: { isModalVisible: false }});
+    dispatch({ type: 'isAddingAvailability', 
+      payload: { isAddingAvailability: false }});
     message.success('Availability added successfully!');
   };
 

@@ -9,8 +9,11 @@ import GuestNavbar from './GuestNavbar';
 import NonregisterNavbar from './NonregisterNavbar';
 import { jwtDecode } from 'jwt-decode';
 import HostNavbar from './HostNavbar';
+import { useNavigate } from "react-router-dom";
+
 
 const Navbar = () => {
+  const navigate = useNavigate();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
@@ -57,7 +60,8 @@ const Navbar = () => {
     localStorage.removeItem('role');
     setIsLoggedIn(false);
     setUserProfile(null);
-    window.location.reload();
+    localStorage.removeItem("token");
+    navigate("/", { replace: true });
   };
 
 

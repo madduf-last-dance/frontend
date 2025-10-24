@@ -50,6 +50,7 @@ export const findById = async (id) => {
 };
 
 export const saveAvalabilities = async (id, data) => {
+    console.log(id,JSON.stringify(data));
     try {
         const response = await apiClient.post(`/accommodation/saveAvailabilities/${id}`, data);
         return response.data;
@@ -67,3 +68,11 @@ export const deleteAccommodation = async (id) => {
     }
 };
 
+export const getBenefits = async () => {
+        try {
+        const response = await apiClient.get(`/accommodation/getAllBenefits`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    } 
+}

@@ -2,13 +2,11 @@ import React, { useEffect, useState  } from 'react';
 import { Form, Input, Button, DatePicker, InputNumber, Upload, Checkbox, Select } from 'antd';
 import { UploadOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-
+import { getBenefits } from '../../services/accommodationService';
 const HotelForm = ({ initialValues, onFinish }) => {
   const [form] = Form.useForm();
-  const options = [{
-    value: 'pera',
-    label: 'pera',}]
-
+  const [options, setOptions] = useState([]);
+  const [benefits, setBenefits] = useState([]);
   const [base64, setBase64] = useState('');
   const [baseImages64, setBaseImages64] = useState([]);
   useEffect(() => {
@@ -31,6 +29,17 @@ const HotelForm = ({ initialValues, onFinish }) => {
       form.resetFields(); // Reset form fields when initialValues is null or undefined
     }
   }, [form, initialValues]);
+
+  useEffect(() => {
+          getBenefits()
+            .then((data) => {
+              console.log(data);
+                setBenefits(data);
+            })
+            .catch((error) => {
+              console.error("Failed to fetch accommodation:", error);
+            });
+  }, []); 
 
   const normFile = (e) => {
     if (Array.isArray(e)) {
@@ -254,7 +263,7 @@ const HotelForm = ({ initialValues, onFinish }) => {
   defaultValue={['a10', 'c12']}
   // onChange={handleChange}
   style={{ width: '100%' }}
-  options={options}
+  options={benefits}
 />
 </>
   );

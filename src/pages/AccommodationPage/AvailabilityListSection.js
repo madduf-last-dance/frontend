@@ -84,16 +84,16 @@ return (
                   </List.Item>
               )}
               />
-
-            <Button
-              type="primary"
-              style={{
-                backgroundColor: 'green',
-                borderColor: 'green',
-                marginRight: '5px',
-                textAlign: 'center',
-              }}
-              onClick={() => {
+              <Button
+                type="primary"
+                disabled={state.isAddingAvailability}
+                style={{
+                  backgroundColor: 'green',
+                  borderColor: 'green',
+                  marginRight: '5px',
+                  textAlign: 'center',
+                }}
+                      onClick={() => {
                 dispatch({ type: 'selectedDates', 
                   payload: { selectedDates: { start: null, end: null } }});
                 dispatch({ type: 'temporaryHighlight', 
@@ -101,9 +101,8 @@ return (
                 dispatch({ type: 'isAddingAvailability', 
                   payload: { isAddingAvailability: true }});
                 message.info('Select a start and end date for availability.');
-              }}
-            >
-              Add New Availability
+              }}>
+              {state.isAddingAvailability ? "Adding..." : "Add Availability"}
             </Button>
             <Button
               type="primary"

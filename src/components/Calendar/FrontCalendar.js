@@ -112,7 +112,6 @@ const FrontCalendar = ( {availability, reservations, onDatesSelected} ) => {
           }))
         );
         setError(null);
-        setSuccess(`Reservation created from ${selectedDates.start} to ${clickedDate}`);
         setWarning(validation.hasPending ? 'Your reservation may not be accepted due to pending reservations.' : null);
         if (onDatesSelected) {
           onDatesSelected({ start: selectedDates.start, end: clickedDate });
