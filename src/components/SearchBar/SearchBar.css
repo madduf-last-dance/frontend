@@ -1,8 +1,9 @@
 .search-bar-container {
   display: flex;
-  justify-content: center; /* Centers the search bar horizontally within its parent */
-  padding: 20px; /* Optional: Adds padding around the container */
-  margin-top: 30px;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+  height: 100vh;           /* take full viewport height */
+  padding: 20px;
 }
 
 .search-bar {
@@ -13,6 +14,8 @@
     background-color: white;
     border-radius: 5px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    flex-wrap: wrap;
+    gap: 10px;
   }
   
   .search-bar .ant-input,

@@ -1,10 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input, DatePicker, Button, Select } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-
-import moment, { updateLocale } from "moment";
-import "./SearchBar.css"; // Create a CSS file for custom styles if needed
-import { search } from "../../services/accommodationService";
 import dayjs from "dayjs";
 import axios from "axios";
 
@@ -12,48 +8,42 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 export default function SearchBar({ updateHotels }) {
+  const today = dayjs();
+  const tenDaysLater = today.add(10, "day");
+
   const [location, setLocation] = useState("");
-  const [dates, setDates] = useState([]);
+  const [dates, setDates] = useState([today, tenDaysLater]);
   const [guests, setGuests] = useState(1);
 
-  const handleLocationChange = (e) => {
-    setLocation(e.target.value);
-  };
-
-  const handleDateChange = (dates) => {
-    setDates(dates);
-  };
-
-  const handleGuestChange = (value) => {
-    setGuests(value);
-  };
+  const handleLocationChange = (e) => setLocation(e.target.value);
+  const handleDateChange = (dates) => setDates(dates);
+  const handleGuestChange = (value) => setGuests(value);
 
   const handleSearch = () => {
     const apiClient = axios.create({
-      //baseURL: 'http://172.29.247.22.nip.io',
-      baseURL: 'http://localhost:8080',
-      headers: {
-        "Content-Type": "application/json",
-      },
+      //baseURL: "http://172.28.225.22.nip.io",
+      baseURL: "http://localhost:8080",
+      headers: { "Content-Type": "application/json" },
       timeout: 5000,
     });
 
     apiClient
       .get(`/accommodation/search`, {
         params: {
-          location: location,
+          location,
           numberOfGuests: guests,
-          startDate: dayjs(dates[0], "DD-MM-YYYY"),
-          endDate: dayjs(dates[1], "DD-MM-YYYY"),
+          startDate: dates[0].format("YYYY-MM-DD"),
+          endDate: dates[1].format("YYYY-MM-DD"),
         },
       })
-      .then((response) => {
-        updateHotels(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((response) => updateHotels(response.data))
+      .catch((error) => console.error(error));
   };
+
+  // 🔹 Trigger search automatically when component mounts
+  useEffect(() => {
+    handleSearch();
+  }, []); // empty dependency array → runs once
 
   return (
     <div className="search-bar-container">
@@ -62,26 +52,24 @@ export default function SearchBar({ updateHotels }) {
           placeholder="Location"
           value={location}
           onChange={handleLocationChange}
-          style={{ width: 200, marginRight: 10 }}
+          style={{ width: 200 }}
         />
         <RangePicker
           value={dates}
           onChange={handleDateChange}
-          style={{ marginRight: 10 }}
-          disabledDate={(current) => current && current < moment().endOf("day")}
+          style={{ }}
+          disabledDate={(current) => current && current < dayjs().startOf("day")}
         />
         <Select
           defaultValue={1}
           onChange={handleGuestChange}
-          style={{ width: 100, marginRight: 10 }}
+          style={{ width: 100}}
         >
-          <Option value={1}>1 Guest</Option>
-          <Option value={2}>2 Guests</Option>
-          <Option value={3}>3 Guests</Option>
-          <Option value={4}>4 Guests</Option>
-          <Option value={5}>5 Guests</Option>
-          <Option value={6}>6 Guests</Option>
-          {/* Add more options as needed */}
+          {[1, 2, 3, 4, 5, 6].map((num) => (
+            <Option key={num} value={num}>
+              {num} Guest{num > 1 ? "s" : ""}
+            </Option>
+          ))}
         </Select>
         <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
           Search
