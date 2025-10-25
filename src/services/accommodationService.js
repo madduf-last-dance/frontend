@@ -1,4 +1,5 @@
 import apiClient from './apiConfig';
+import { jwtDecode } from 'jwt-decode';
 
 export const search = async (searchData) => {
     try {
@@ -49,10 +50,22 @@ export const findById = async (id) => {
     }
 };
 
-export const saveAvalabilities = async (id, data) => {
-    console.log(id,JSON.stringify(data));
+export const saveAvalabilities = async (id, availabilities) => {
     try {
-        const response = await apiClient.post(`/accommodation/saveAvailabilities/${id}`, data);
+        const token = localStorage.getItem('accessToken');
+        const decoded = jwtDecode(token);
+        console.log(decoded)
+        const payload = availabilities;
+
+        const response = await apiClient.post(
+        `/accommodation/saveAvailabilities/${id}`,
+        payload,
+        {
+            headers: {
+            Authorization: `Bearer ${token}`,
+            },
+        }
+        );
         return response.data;
     } catch (error) {
         throw error;

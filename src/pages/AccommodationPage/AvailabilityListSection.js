@@ -39,10 +39,26 @@ const handleRemoveAvailability = (index) => {
 
     message.success('Availability and pending reservations removed in deleted timeframe.');
   };
-  const handleSaveAvailabilities = () => {
-    saveAvalabilities(state.accommodationId, state.availabilityList);
-    message.success('Availabilities saved!');
-  }
+  const handleSaveAvailabilities = async () => {
+    try {
+      const response = await saveAvalabilities(state.accommodationId, state.availabilityList);
+      message.success('Availabilities saved successfully!');
+      console.log('Backend response:', response);
+
+      // Optionally refresh state or fetch updated availabilities here
+      // dispatch({ type: 'availabilityList', payload: response.updatedAvailabilities });
+    } catch (error) {
+      console.error('Error saving availabilities:', error);
+
+      // Backend error structure (from Nest)
+      const backendMessage =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to save availabilities. Please try again.';
+
+      message.error(backendMessage);
+    }
+  };
 
   function handleAddTask() {
     // dispatch({
