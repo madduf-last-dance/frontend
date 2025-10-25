@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
-import { Input, DatePicker, Button, Select } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import React, { useState } from "react";
+import { Input, DatePicker, Button, Select } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
-import moment, { updateLocale } from 'moment';
-import './SearchBar.css'; // Create a CSS file for custom styles if needed
-import { search } from '../../services/accommodationService';
-import dayjs from 'dayjs';
-import axios from 'axios';
+import moment, { updateLocale } from "moment";
+import "./SearchBar.css"; // Create a CSS file for custom styles if needed
+import { search } from "../../services/accommodationService";
+import dayjs from "dayjs";
+import axios from "axios";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-
 export default function SearchBar({ updateHotels }) {
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState("");
   const [dates, setDates] = useState([]);
   const [guests, setGuests] = useState(1);
 
@@ -31,24 +30,26 @@ export default function SearchBar({ updateHotels }) {
 
   const handleSearch = () => {
     const apiClient = axios.create({
-      baseURL: 'http://172.19.70.249.nip.io',
+      baseURL: "http://172.28.225.22.nip.io",
       headers: {
-          'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       timeout: 5000,
-  });
-  
-      apiClient.get(`/accommodation/search`, {
+    });
+
+    apiClient
+      .get(`/accommodation/search`, {
         params: {
-        location: location,
-        numberOfGuests: guests,
-        startDate:dayjs(dates[0],'DD-MM-YYYY'),
-        endDate: dayjs(dates[1],'DD-MM-YYYY'),
-      }})
-      .then(response => {
+          location: location,
+          numberOfGuests: guests,
+          startDate: dayjs(dates[0], "DD-MM-YYYY"),
+          endDate: dayjs(dates[1], "DD-MM-YYYY"),
+        },
+      })
+      .then((response) => {
         updateHotels(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
@@ -66,7 +67,7 @@ export default function SearchBar({ updateHotels }) {
           value={dates}
           onChange={handleDateChange}
           style={{ marginRight: 10 }}
-          disabledDate={(current) => current && current < moment().endOf('day')}
+          disabledDate={(current) => current && current < moment().endOf("day")}
         />
         <Select
           defaultValue={1}
@@ -81,14 +82,10 @@ export default function SearchBar({ updateHotels }) {
           <Option value={6}>6 Guests</Option>
           {/* Add more options as needed */}
         </Select>
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          onClick={handleSearch}
-        >
+        <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
           Search
         </Button>
       </div>
     </div>
   );
-};
+}
