@@ -3,6 +3,7 @@ import { Input, DatePicker, Button, Select } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import axios from "axios";
+import './SearchBar.css'
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
