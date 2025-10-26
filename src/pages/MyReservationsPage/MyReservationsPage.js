@@ -1,71 +1,67 @@
-import React from 'react';
-import { Layout, Card, List, Button, Modal, Row, Col, Tag,Typography } from 'antd';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-import Navbar from '../../components/Navbar/Navbar';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { cancelAccepted, cancelPending, userReservations } from '../../services/reservationService';
+import React from "react";
+import {
+  Layout,
+  Card,
+  List,
+  Button,
+  Modal,
+  Row,
+  Col,
+  Tag,
+  Typography,
+} from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+import Navbar from "../../components/Navbar/Navbar";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  cancelAccepted,
+  cancelPending,
+  userReservations,
+} from "../../services/reservationService";
 
 const { Content } = Layout;
 const { confirm } = Modal;
 const { Title } = Typography;
 
-// Sample reservations data
-const reservations = [
-  {
-    id: 1,
-    hotelName: "Hotel Zimbabve",
-    startDate: "2023-06-01",
-    endDate: "2023-06-05",
-    status: "Confirmed",
-  },
-  {
-    id: 2,
-    hotelName: "Hotel California",
-    startDate: "2023-07-10",
-    endDate: "2023-07-15",
-    status: "Pending",
-  },
-  
-];
-
 const MyReservationsPage = () => {
-
-
   const { id } = useParams();
-  const [reservations,setReservations] = useState([]);
+  const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
-   userReservations(id).then(data => {
+    userReservations(id).then((data) => {
+      console.log(data);
       setReservations(data);
-    })
-  }, [id])
+    });
+  }, [id]);
   // Function to handle reservation cancellation
   const handleCancelReservation = (reservationId, status) => {
     confirm({
-      title: 'Are you sure you want to cancel this reservation?',
+      title: "Are you sure you want to cancel this reservation?",
       icon: <ExclamationCircleOutlined />,
       onOk() {
-        if(status === 'Pending') {
-          cancelPending(reservationId).then(data => {
-            userReservations(id).then(data => {
+        if (status === "Pending") {
+          cancelPending(reservationId).then((data) => {
+            userReservations(id).then((data) => {
               setReservations(data);
-            })
-          })
-        } else if(status === 'Accepted') {
-          cancelAccepted(reservationId).then(data => {
-            userReservations(id).then(data => {
+            });
+          });
+        } else if (status === "Accepted") {
+          cancelAccepted(reservationId).then((data) => {
+            userReservations(id).then((data) => {
               setReservations(data);
-            })
-          })
+            });
+          });
         }
 
-        const updatedReservations = reservations.filter(reservation => reservation.id !== reservationId);
+        const updatedReservations = reservations.filter(
+          (reservation) => reservation.id !== reservationId,
+        );
         // Update state or perform any necessary actions
-        console.log('Reservation cancelled:', reservationId);
+        console.log("Reservation cancelled:", reservationId);
       },
       onCancel() {
-        console.log('Cancel');
+        console.log("Cancel");
       },
     });
   };
@@ -73,19 +69,34 @@ const MyReservationsPage = () => {
   return (
     <>
       <Navbar />
-      <Content style={{ padding: '0 120px', marginTop: "42px" }}>
+      <Content style={{ padding: "0 120px", marginTop: "42px" }}>
         <Title level={2}>My Reservations</Title>
         <Row gutter={[16, 16]}>
           {reservations.map((reservation) => (
             <Col span={8} key={reservation.id}>
               <Card
                 title={reservation.hotelName}
-                extra={<Tag color={getColorForStatus(reservation.status)}>{reservation.status}</Tag>}
-                style={{ width: '100%', backgroundColor: '#f0f2f5' }}
+                extra={
+                  <Tag color={getColorForStatus(reservation.status)}>
+                    {reservation.status}
+                  </Tag>
+                }
+                style={{ width: "100%", backgroundColor: "#f0f2f5" }}
               >
-                <p><strong>Date:</strong><br></br> 
-                {reservation.startDate} - {reservation.endDate}</p>
-                <Button type="link" danger onClick={() => handleCancelReservation(reservation.id,reservation.status)}>Cancel</Button>
+                <p>
+                  <strong>Date:</strong>
+                  <br></br>
+                  {reservation.startDate} - {reservation.endDate}
+                </p>
+                <Button
+                  type="link"
+                  danger
+                  onClick={() =>
+                    handleCancelReservation(reservation.id, reservation.status)
+                  }
+                >
+                  Cancel
+                </Button>
               </Card>
             </Col>
           ))}
@@ -97,16 +108,16 @@ const MyReservationsPage = () => {
 
 // Function to determine color based on reservation status
 const getColorForStatus = (status) => {
-    switch (status) {
-      case "Confirmed":
-        return "green";
-      case "Pending":
-        return "orange";
-      case "Cancelled":
-        return "red";
-      default:
-        return "blue";
-    }
-  };
+  switch (status) {
+    case "Confirmed":
+      return "green";
+    case "Pending":
+      return "orange";
+    case "Cancelled":
+      return "red";
+    default:
+      return "blue";
+  }
+};
 
 export default MyReservationsPage;
