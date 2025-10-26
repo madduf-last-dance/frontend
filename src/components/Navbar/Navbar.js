@@ -10,10 +10,20 @@ import NonregisterNavbar from './NonregisterNavbar';
 import { jwtDecode } from 'jwt-decode';
 import HostNavbar from './HostNavbar';
 import { useNavigate } from "react-router-dom";
-
+import { logout } from '../../utils/logoutUtil';
+import { message } from "antd";
 
 const Navbar = () => {
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    setIsLoggedIn(false);
+    setUserProfile(null);
+    navigate("/", { replace: true });
+    message.success('Successfully logged out!');
+  };
+
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
@@ -54,16 +64,6 @@ const Navbar = () => {
   const closeLoginModal = () => {
     setLoginVisible(false);
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('role');
-    setIsLoggedIn(false);
-    setUserProfile(null);
-    localStorage.removeItem("token");
-    navigate("/", { replace: true });
-  };
-
 
   const handleMenu = () => {
     if (isLoggedIn) {

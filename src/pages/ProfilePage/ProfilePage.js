@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Layout, message, Modal } from 'antd';
 import Navbar from '../../components/Navbar/Navbar';
 import './ProfilePage.css';
-import { profile, updateProfile } from '../../services/userService';
+import { deleteAccount, profile, updateProfile } from '../../services/userService';
+import { useLogout } from '../../utils/logoutUtil';
 
 const { Content } = Layout;
 
 const ProfilePage = () => {
+
+  const logout = useLogout();
 
   const [userProfile, setUserProfile] = useState({});
   const [profileForm] = Form.useForm();
@@ -57,6 +60,18 @@ const ProfilePage = () => {
     // Call the backend API to update the password here
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount(userProfile.id); // pass user ID
+      message.success('Your account has been deleted.');
+      setTimeout(() => {
+            logout();
+      }, 3500);
+    } catch (error) {
+      message.error(error.message);
+    }
+
+  };
   const handleCredentialsUpdate = (values) => {
 
   }
@@ -128,6 +143,33 @@ const ProfilePage = () => {
           <Button type="link" onClick={showPasswordModal} style={{ marginBottom: '16px', marginLeft: '16px' }}>
             Change Password
           </Button>
+
+          {/* Delete Account Button */}
+          <Button 
+            danger 
+            type="primary" 
+            onClick={() => {
+              Modal.confirm({
+                title: 'Are you sure you want to delete your account?',
+                content: 'This action cannot be undone.',
+                okText: 'Yes, delete it',
+                okType: 'danger',
+                cancelText: 'Cancel',
+                onOk: async () => {
+                  try {
+                    await handleDeleteAccount();
+                  } catch (error) {
+                    message.error('Failed to delete account');
+                    console.error(error);
+                  }
+                },
+              });
+            }}
+            style={{ marginBottom: '16px', marginLeft: '16px' }}
+          >
+            Delete Account
+          </Button>
+
 
           {/* Username Update Modal */}
           <Modal

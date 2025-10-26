@@ -45,3 +45,16 @@ export const updateProfile = async (profileData) => {
         throw error;
     }
 };
+
+export const deleteAccount = async (userId) => {
+  try {
+    const response = await apiClient.delete(`/user/removeUser/${userId}`);
+    return response.data;
+  } catch (error) {
+    const backendMessage =
+      error.response?.data?.message || 
+      error.response?.data?.error || 
+      'Failed to delete account';
+    throw new Error(backendMessage);
+  }
+};
