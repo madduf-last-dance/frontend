@@ -142,6 +142,10 @@ const AccommodationPage = () => {
         message.success(`Reservation from ${state.selectedReservation.startDate} to ${state.selectedReservation.endDate} has been accepted.`);
         dispatch({ type: 'isManageModalVisible', 
           payload: { isManageModalVisible: false }});
+         setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+        window.location.reload();
     } catch (error) {
         message.error("Failed to accept the reservation. Please try again.");
         console.error(error);

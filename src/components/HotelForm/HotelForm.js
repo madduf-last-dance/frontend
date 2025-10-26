@@ -157,7 +157,7 @@ const HotelForm = ({ initialValues, onFinish }) => {
         <Form.Item
           label="Benefits"
           name="benefits"
-          rules={[{ required: true, message: "Please input the benefits!" }]}
+          rules={[{ required: false, message: "Please input the benefits!" }]}
         >
           <Select
             mode="multiple"

@@ -7,7 +7,7 @@ import { saveAvalabilities } from '../../services/accommodationService';
 
 const AvailabilityListSection = ({ state, dispatch }) => {
 
-  const [selectedReservation, setSelectedReservation] = useState(null);
+const [selectedReservation, setSelectedReservation] = useState(null);
 
 
 const handleManageReservation = (reservation) => {
